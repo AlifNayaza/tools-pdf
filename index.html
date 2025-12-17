@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' data: blob:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta http-equiv="Permissions-Policy" content="
+        geolocation=(),
+        microphone=(),
+        camera=(),
+        payment=(),
+        usb=(),
+        magnetometer=(),
+        gyroscope=(),
+        accelerometer=()
+    ">
+    <title>PDF & Image Tools - Neo-Brutalist Suite</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body>
+    <canvas id="backgroundCanvas"></canvas>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <header class="main-header">
+            <div class="main-header-badge">
+                <i class="fas fa-star"></i> TOOLS GRATIS & CEPAT
+            </div>
+            <h1>
+                <span class="word">PDF</span>
+                <span class="word">&</span>
+                <span class="word">IMAGE</span>
+                <span class="word">TOOLS</span>
+            </h1>
+            <p>
+                Kelola PDF dan gambar dengan mudah! Tools profesional yang 
+                cepat, efisien, dan 100% gratis. Tanpa batasan, tanpa ribet!
+            </p>
+        </header>
+
+        <div class="tools-grid">
+            <a href="/pdf-compressor.html" class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-compress"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>KOMPRES PDF</h3>
+                    <p>Kurangi ukuran file PDF hingga 70% tanpa kehilangan kualitas. Proses cepat dan aman!</p>
+                </div>
+                <div class="tool-arrow">
+                    <span>START NOW</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="/pdf-merge.html" class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-object-group"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>GABUNG PDF</h3>
+                    <p>Gabungkan beberapa file PDF menjadi satu dokumen. Drag & drop untuk mengatur urutan!</p>
+                </div>
+                <div class="tool-arrow">
+                    <span>START NOW</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="/pdf-split.html" class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-cut"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>PISAH PDF</h3>
+                    <p>Pisahkan halaman PDF menjadi file terpisah. Pilih halaman, rentang, atau semua!</p>
+                </div>
+                <div class="tool-arrow">
+                    <span>START NOW</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="/pdf-to-images.html" class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-images"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>PDF KE GAMBAR</h3>
+                    <p>Ekstrak semua halaman PDF menjadi gambar JPG atau PNG berkualitas tinggi!</p>
+                </div>
+                <div class="tool-arrow">
+                    <span>START NOW</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="/image-to-pdf.html" class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-file-image"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>GAMBAR KE PDF</h3>
+                    <p>Gabungkan banyak gambar menjadi satu file PDF. Atur ukuran halaman sesuai kebutuhan!</p>
+                </div>
+                <div class="tool-arrow">
+                    <span>START NOW</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+
+            <a href="/image-compressor.html" class="tool-card">
+                <div class="tool-icon">
+                    <i class="fas fa-image"></i>
+                </div>
+                <div class="tool-content">
+                    <h3>KOMPRES GAMBAR</h3>
+                    <p>Kompres JPG dan PNG dengan kontrol kualitas penuh. Hemat ruang penyimpanan!</p>
+                </div>
+                <div class="tool-arrow">
+                    <span>START NOW</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Load scripts -->
+    <script src="canvas-animation.js"></script>
+    <script src="navbar.js"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Content Security Policy - Mencegah XSS attacks -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' data: blob:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+
+    <!-- Mencegah clickjacking -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+
+    <!-- Mencegah MIME type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+    <!-- XSS Protection -->
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+    <!-- Referrer Policy -->
+    <meta name="referrer" content="no-referrer-when-downgrade">
+
+    <!-- Permissions Policy -->
+    <meta http-equiv="Permissions-Policy" content="
+        geolocation=(),
+        microphone=(),
+        camera=(),
+        payment=(),
+        usb=(),
+        magnetometer=(),
+        gyroscope=(),
+        accelerometer=()
+    ">
+    <title>GAMBAR KE PDF 📄</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body class="tool-page">
+    <canvas id="backgroundCanvas"></canvas>
+    <!-- Navbar akan di-inject otomatis oleh navbar.js -->
+
+    <div class="card">
+        <header class="card-header">
+            <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <h1>GAMBAR KE PDF 📄</h1>
+            <p>Konversi gambar menjadi dokumen PDF.</p>
+        </header>
+        <main class="card-body">
+            <div class="step" id="step1">
+                <label for="imageFiles" class="file-label" id="dropArea">
+                    <i class="fas fa-images"></i>
+                    <span>PILIH GAMBAR</span>
+                    <small>BISA BANYAK SEKALIGUS • JPG, PNG • MAX 100MB TOTAL</small>
+                </label>
+                <input type="file" id="imageFiles" accept="image/jpeg,image/png,image/jpg" multiple hidden>
+            </div>
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <p><strong>JUMLAH GAMBAR:</strong> <span id="imageCount"></span></p>
+                <p><strong>TOTAL UKURAN:</strong> <span id="totalSize"></span></p>
+            </div>
+            <div id="previewContainer" style="display: none;">
+                <h3>PREVIEW GAMBAR</h3>
+                <div id="imagePreviewList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;"></div>
+            </div>
+            <div class="step" id="step2" style="display: none;">
+                <label for="pageSize"><i class="fas fa-file-alt"></i> UKURAN HALAMAN PDF</label>
+                <select id="pageSize">
+                    <option value="fit">Sesuaikan dengan Gambar</option>
+                    <option value="a4">A4 (210 x 297 mm)</option>
+                    <option value="letter">Letter (216 x 279 mm)</option>
+                </select>
+            </div>
+            <button id="convertBtn" style="display: none;">
+                <i class="fas fa-file-pdf"></i> KONVERSI KE PDF
+            </button>
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <p id="status">MENGONVERSI...</p>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+            <div class="result-info" id="resultInfo" style="display: none;">
+                <h2>BERHASIL! 🎉</h2>
+                <div class="stats">
+                    <p>JUMLAH HALAMAN: <strong id="pageCount"></strong></p>
+                    <p>UKURAN PDF: <strong id="pdfSize"></strong></p>
+                </div>
+                <a id="downloadLink" class="download-link"><i class="fas fa-download"></i> UNDUH PDF</a>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Load scripts -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="canvas-animation.js"></script>
+    <script src="navbar.js"></script>
+    <script src="image-to-pdf.js"></script>
+</body>
+</html>
