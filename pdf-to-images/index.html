@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Content Security Policy - Mencegah XSS attacks -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' data: blob:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+
+    <!-- Mencegah clickjacking -->
+    <meta http-equiv="X-Frame-Options" content="DENY">
+
+    <!-- Mencegah MIME type sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
+    <!-- XSS Protection -->
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
+    <!-- Referrer Policy -->
+    <meta name="referrer" content="no-referrer-when-downgrade">
+
+    <!-- Permissions Policy -->
+    <meta http-equiv="Permissions-Policy" content="
+        geolocation=(),
+        microphone=(),
+        camera=(),
+        payment=(),
+        usb=(),
+        magnetometer=(),
+        gyroscope=(),
+        accelerometer=()
+    ">
+    <title>PDF KE GAMBAR 📷</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body class="tool-page">
+    <canvas id="backgroundCanvas"></canvas>
+    <!-- Navbar akan di-inject otomatis oleh navbar.js -->
+
+    <div class="card">
+        <header class="card-header">
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <h1>PDF KE GAMBAR 📷</h1>
+            <p>Ekstrak halaman PDF menjadi gambar.</p>
+        </header>
+        <main class="card-body">
+            <div class="step" id="step1">
+                <label for="pdfFile" class="file-label" id="dropArea">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PILIH FILE PDF</span>
+                    <small>MAX 100MB</small>
+                </label>
+                <input type="file" id="pdfFile" accept=".pdf" hidden>
+            </div>
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <p><strong>NAMA FILE:</strong> <span id="fileName"></span></p>
+                <p><strong>UKURAN:</strong> <span id="fileSize"></span></p>
+                <p><strong>HALAMAN:</strong> <span id="filePages"></span></p>
+            </div>
+            <div class="step" id="step2" style="display: none;">
+                <label for="imageFormat"><i class="fas fa-image"></i> FORMAT GAMBAR</label>
+                <select id="imageFormat" style="margin-bottom: 15px;">
+                    <option value="png">PNG (Kualitas Tinggi)</option>
+                    <option value="jpeg">JPEG (Ukuran Kecil)</option>
+                </select>
+                <label for="quality"><i class="fas fa-sliders-h"></i> KUALITAS OUTPUT</label>
+                <div class="quality-slider">
+                    <input type="range" id="quality" min="1" max="3" step="1" value="2">
+                    <span id="qualityValue">Sedang</span>
+                </div>
+                <small style="color: #666; font-size: 12px;">Rendah (1x) • Sedang (2x) • Tinggi (3x)</small>
+            </div>
+            <button id="convertBtn" style="display: none;">
+                <i class="fas fa-images"></i> KONVERSI KE GAMBAR
+            </button>
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <p id="status">MENGONVERSI...</p>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+            <div id="previewContainer" style="display: none; margin-top: 20px;">
+                <h3>PREVIEW HASIL</h3>
+                <div id="imageResultList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; max-height: 400px; overflow-y: auto;"></div>
+            </div>
+            <div class="result-info" id="resultInfo" style="display: none;">
+                <h2>KONVERSI SELESAI</h2>
+                <div class="stats">
+                    <p>FILE ASLI: <strong id="originalName"></strong></p>
+                    <p>GAMBAR DIBUAT: <strong id="imageCount"></strong></p>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                    <button id="downloadOneByOneBtn" class="download-link" style="cursor: pointer; flex: 1; min-width: 200px;">
+                        <i class="fas fa-images"></i> UNDUH SATU PER SATU
+                    </button>
+                    <button id="downloadAllBtn" class="download-link" style="cursor: pointer; flex: 1; min-width: 200px;">
+                        <i class="fas fa-file-archive"></i> UNDUH SEMUA (ZIP)
+                    </button>
+                </div>
+                <p id="downloadProgress" style="display:none; margin-top: 10px; font-size: 13px; color: #555; text-align: center;"></p>
+                <button type="button" id="resetBtn" class="reset-btn" onclick="window.handlePdfToImagesReset && window.handlePdfToImagesReset()"><i class="fas fa-redo"></i> KONVERSI PDF LAIN</button>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Load scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="../js/shared/security.js"></script>
+    <script src="../js/shared/toast.js"></script>
+    <script src="../js/shared/pwa.js"></script>
+    <script src="../js/shared/canvas-animation.js"></script>
+    <script src="../js/shared/navbar.js"></script>
+    <script src="../js/tools/pdf-to-images.js"></script>
+</body>
+</html>

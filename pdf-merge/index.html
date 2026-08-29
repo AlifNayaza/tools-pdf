@@ -40,95 +40,9 @@
         accelerometer=()
     ">
     <title>GABUNG PDF 📑</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
-    <style>
-        .pdf-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: white;
-            border: 3px solid #000;
-            margin-bottom: 10px;
-            cursor: move;
-            transition: all 0.2s ease;
-        }
-        .pdf-item:hover {
-            transform: translateX(5px);
-            box-shadow: 8px 8px 0px #000;
-        }
-        .pdf-item.dragging {
-            opacity: 0.5;
-        }
-        .drag-handle {
-            font-size: 1.5rem;
-            color: #666;
-            cursor: grab;
-        }
-        .drag-handle:active {
-            cursor: grabbing;
-        }
-        .pdf-preview {
-            width: 80px;
-            height: 100px;
-            border: 2px solid #000;
-            background: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-        }
-        .pdf-info {
-            flex: 1;
-        }
-        .pdf-info h4 {
-            margin: 0 0 5px 0;
-            font-family: 'Space Mono', monospace;
-            font-size: 0.9rem;
-        }
-        .pdf-info p {
-            margin: 0;
-            font-size: 0.8rem;
-            color: #666;
-        }
-        .remove-btn {
-            background: #ff006e;
-            color: white;
-            border: 2px solid #000;
-            padding: 10px 15px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-        .remove-btn:hover {
-            background: #ff5c00;
-            transform: scale(1.1);
-        }
-        .pdf-list {
-            max-height: 400px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-        .add-more-btn {
-            background: #8fff00;
-            color: #000;
-            border: 3px solid #000;
-            padding: 15px 30px;
-            font-weight: bold;
-            font-family: 'Space Mono', monospace;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 20px;
-            transition: all 0.2s ease;
-        }
-        .add-more-btn:hover {
-            transform: translate(-2px, -2px);
-            box-shadow: 4px 4px 0px #000;
-        }
-    </style>
 </head>
 <body class="tool-page">
     <canvas id="backgroundCanvas"></canvas>
@@ -136,7 +50,7 @@
 
     <div class="card">
         <header class="card-header">
-            <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
             <h1>GABUNG PDF 📑</h1>
             <p>Gabungkan beberapa file PDF menjadi satu dokumen.</p>
         </header>
@@ -161,6 +75,7 @@
             </div>
 
             <div class="file-info" id="fileInfo" style="display: none;">
+                <p><strong>NAMA FILE:</strong> <span id="fileName"></span></p>
                 <p><strong>TOTAL PDF:</strong> <span id="pdfCount"></span></p>
                 <p><strong>TOTAL UKURAN:</strong> <span id="totalSize"></span></p>
                 <p><strong>TOTAL HALAMAN:</strong> <span id="totalPages"></span></p>
@@ -178,13 +93,14 @@
             </div>
 
             <div class="result-info" id="resultInfo" style="display: none;">
-                <h2>BERHASIL! 🎉</h2>
+                <h2>PENGGABUNGAN SELESAI</h2>
                 <div class="stats">
                     <p>JUMLAH PDF: <strong id="mergedCount"></strong></p>
                     <p>TOTAL HALAMAN: <strong id="mergedPages"></strong></p>
                     <p>UKURAN FILE: <strong id="mergedSize"></strong></p>
                 </div>
                 <a id="downloadLink" class="download-link"><i class="fas fa-download"></i> UNDUH PDF GABUNGAN</a>
+                <button type="button" id="resetBtn" class="reset-btn" onclick="window.handlePdfMergeReset && window.handlePdfMergeReset()"><i class="fas fa-redo"></i> GABUNG PDF LAIN</button>
             </div>
         </main>
     </div>
@@ -192,8 +108,11 @@
     <!-- Load scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="canvas-animation.js"></script>
-    <script src="navbar.js"></script>
-    <script src="pdf-merge.js"></script>
+    <script src="../js/shared/security.js"></script>
+    <script src="../js/shared/toast.js"></script>
+    <script src="../js/shared/pwa.js"></script>
+    <script src="../js/shared/canvas-animation.js"></script>
+    <script src="../js/shared/navbar.js"></script>
+    <script src="../js/tools/pdf-merge.js"></script>
 </body>
 </html>

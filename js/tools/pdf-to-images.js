@@ -6,6 +6,9 @@ const convertBtn = document.getElementById('convertBtn');
 const statusP = document.getElementById('status');
 const progressBarFill = document.getElementById('progressBarFill');
 const downloadAllBtn = document.getElementById('downloadAllBtn');
+const downloadOneByOneBtn = document.getElementById('downloadOneByOneBtn');
+const downloadProgressP = document.getElementById('downloadProgress');
+const resetBtn = document.getElementById('resetBtn');
 const imageFormatSelect = document.getElementById('imageFormat');
 const qualityInput = document.getElementById('quality');
 const qualityValueSpan = document.getElementById('qualityValue');
@@ -25,7 +28,21 @@ const imageCountSpan = document.getElementById('imageCount');
 
 let originalFile = null;
 let generatedImages = [];
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB in bytes
+const MAX_FILE_SIZE = 100 * 1024 * 1024;
+
+// Converts a data URL to a Blob without using fetch()
+// (fetch on data: URLs is blocked by connect-src 'self' CSP)
+function dataURLtoBlob(dataURL) {
+    const parts = dataURL.split(',');
+    const mime = parts[0].match(/:(.*?);/)[1];
+    const binary = atob(parts[1]);
+    const len = binary.length;
+    const u8arr = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        u8arr[i] = binary.charCodeAt(i);
+    }
+    return new Blob([u8arr], { type: mime });
+}
 
 function formatBytes(bytes, decimals = 2) {
     if (bytes === 0) return '0 Bytes';
@@ -51,12 +68,14 @@ function resetUI() {
 
 async function processFile(file) {
     if (!file || file.type !== 'application/pdf') {
-        alert('Silakan pilih file PDF yang valid!');
+        if (window.Toast) window.Toast.error('Pilih file PDF yang valid.');
+        else alert('Pilih file PDF yang valid.');
         return;
     }
     
     if (file.size > MAX_FILE_SIZE) {
-        alert(`Ukuran file terlalu besar! Maksimal ${formatBytes(MAX_FILE_SIZE)}`);
+        if (window.Toast) window.Toast.error(`Ukuran file melebihi batas maksimal (${formatBytes(MAX_FILE_SIZE)}).`);
+        else alert(`Ukuran file melebihi batas maksimal (${formatBytes(MAX_FILE_SIZE)}).`);
         return;
     }
     
@@ -82,45 +101,53 @@ async function processFile(file) {
     };
 }
 
-// Drag and Drop Events
+// Global Drag & Drop Prevention
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+    }, false);
 });
 
-function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
-}
-
 ['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, () => {
-        dropArea.classList.add('drag-over');
-    }, false);
+    dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
 });
 
 ['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, () => {
-        dropArea.classList.remove('drag-over');
-    }, false);
+    dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
 });
 
 dropArea.addEventListener('drop', (e) => {
     const dt = e.dataTransfer;
-    const files = dt.files;
-    if (files.length > 0) {
-        processFile(files[0]);
+    if (dt.files.length > 0) {
+        processFile(dt.files[0]);
     }
 }, false);
 
-dropArea.addEventListener('click', () => {
-    pdfFileInput.click();
-});
+// EVENT KLIK INI DIHAPUS KARENA MEMBUAT BENTROK
+// dropArea.addEventListener('click', () => { pdfFileInput.click(); });
 
 pdfFileInput.addEventListener('change', (e) => {
     if (e.target.files.length > 0) {
         processFile(e.target.files[0]);
     }
 });
+
+function handlePdfToImagesReset() {
+    resetUI();
+    pdfFileInput.value = '';
+    originalFile = null;
+    generatedImages = [];
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.handlePdfToImagesReset = handlePdfToImagesReset;
+
+if (resetBtn) {
+    resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handlePdfToImagesReset();
+    });
+}
 
 qualityInput.addEventListener('input', () => {
     const quality = parseInt(qualityInput.value);
@@ -130,13 +157,13 @@ qualityInput.addEventListener('input', () => {
 
 convertBtn.addEventListener('click', async () => {
     if (!originalFile) {
-        alert('Silakan pilih file terlebih dahulu!');
+        if (window.Toast) window.Toast.warning('Silakan pilih file terlebih dahulu!');
+        else alert('Silakan pilih file!');
         return;
     }
 
     const imageFormat = imageFormatSelect.value;
-    const quality = parseInt(qualityInput.value);
-    const scale = quality; // 1x, 2x, atau 3x
+    const scale = parseInt(qualityInput.value);
 
     convertBtn.disabled = true;
     convertBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengonversi...';
@@ -169,24 +196,16 @@ convertBtn.addEventListener('click', async () => {
 
                 await page.render({ canvasContext: context, viewport: viewport }).promise;
 
-                // Konversi ke format yang dipilih
                 const mimeType = imageFormat === 'png' ? 'image/png' : 'image/jpeg';
                 const jpegQuality = imageFormat === 'jpeg' ? 0.92 : 1.0;
                 const imageDataUrl = canvas.toDataURL(mimeType, jpegQuality);
                 
-                // Simpan untuk download nanti
-                const response = await fetch(imageDataUrl);
-                const blob = await response.blob();
+                const blob = dataURLtoBlob(imageDataUrl);
                 const extension = imageFormat === 'png' ? 'png' : 'jpg';
                 const fileName = `page-${i}.${extension}`;
                 
-                generatedImages.push({
-                    blob: blob,
-                    fileName: fileName,
-                    dataUrl: imageDataUrl
-                });
+                generatedImages.push({ blob: blob, fileName: fileName, dataUrl: imageDataUrl });
 
-                // Buat preview
                 const previewDiv = document.createElement('div');
                 previewDiv.style.cssText = 'position: relative; border: 2px solid #ddd; border-radius: 8px; overflow: hidden; background: #f9f9f9;';
                 
@@ -211,18 +230,26 @@ convertBtn.addEventListener('click', async () => {
             }
 
             progressContainer.style.display = 'none';
-            previewContainer.style.display = 'block';
+            step2Div.style.display = 'none';
+            convertBtn.style.display = 'none';
             resultInfoDiv.style.display = 'block';
+            previewContainer.style.display = 'block';
+
+            setTimeout(() => {
+                resultInfoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
 
             originalNameSpan.textContent = originalFile.name;
             imageCountSpan.textContent = generatedImages.length;
 
             convertBtn.disabled = false;
             convertBtn.innerHTML = '<i class="fas fa-images"></i> Konversi ke Gambar';
+
+            if (window.Toast) window.Toast.success('Halaman PDF berhasil dikonversi ke gambar.');
         };
     } catch (error) {
-        console.error(error);
-        alert('Error saat konversi: ' + error.message);
+        if (window.Toast) window.Toast.error('Gagal mengonversi PDF: ' + error.message);
+        else alert('Gagal mengonversi PDF: ' + error.message);
         statusP.textContent = `Error: ${error.message}`;
         progressContainer.style.display = 'none';
         convertBtn.disabled = false;
@@ -230,28 +257,65 @@ convertBtn.addEventListener('click', async () => {
     }
 });
 
+// Unduh Satu per Satu — trigger download tiap file dengan jeda kecil
+downloadOneByOneBtn.addEventListener('click', async () => {
+    if (generatedImages.length === 0) {
+        if (window.Toast) window.Toast.warning('Tidak ada gambar untuk diunduh.');
+        else alert('Tidak ada gambar untuk diunduh.');
+        return;
+    }
+
+    downloadOneByOneBtn.disabled = true;
+    downloadOneByOneBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengunduh...';
+    downloadProgressP.style.display = 'block';
+
+    for (let i = 0; i < generatedImages.length; i++) {
+        const img = generatedImages[i];
+        downloadProgressP.textContent = `Mengunduh ${i + 1} dari ${generatedImages.length}: ${img.fileName}`;
+
+        const url = URL.createObjectURL(img.blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = img.fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        // Jeda antar unduhan agar browser tidak memblokir
+        await new Promise(resolve => setTimeout(resolve, 400));
+    }
+
+    downloadProgressP.textContent = `✅ Selesai! ${generatedImages.length} gambar berhasil diunduh.`;
+    downloadOneByOneBtn.disabled = false;
+    downloadOneByOneBtn.innerHTML = '<i class="fas fa-images"></i> UNDUH SATU PER SATU';
+});
+
+// Unduh Semua sebagai ZIP
 downloadAllBtn.addEventListener('click', async () => {
     if (generatedImages.length === 0) {
-        alert('Tidak ada gambar untuk diunduh!');
+        if (window.Toast) window.Toast.warning('Tidak ada gambar untuk diunduh!');
+        else alert('Tidak ada gambar untuk diunduh!');
         return;
     }
 
     downloadAllBtn.disabled = true;
     downloadAllBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuat ZIP...';
+    downloadProgressP.style.display = 'block';
+    downloadProgressP.textContent = 'Mengemas semua gambar ke dalam ZIP...';
 
     try {
         const zip = new JSZip();
         const folder = zip.folder('pdf-images');
 
-        generatedImages.forEach(img => {
-            folder.file(img.fileName, img.blob);
-        });
+        generatedImages.forEach(img => folder.file(img.fileName, img.blob));
 
-        const zipBlob = await zip.generateAsync({ 
-            type: 'blob',
-            compression: 'DEFLATE',
-            compressionOptions: { level: 6 }
-        });
+        const zipBlob = await zip.generateAsync(
+            { type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } },
+            (metadata) => {
+                downloadProgressP.textContent = `Mengemas ZIP: ${Math.round(metadata.percent)}%`;
+            }
+        );
 
         const url = URL.createObjectURL(zipBlob);
         const a = document.createElement('a');
@@ -262,12 +326,13 @@ downloadAllBtn.addEventListener('click', async () => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
+        downloadProgressP.textContent = `✅ ZIP berhasil diunduh! (${generatedImages.length} gambar)`;
         downloadAllBtn.disabled = false;
-        downloadAllBtn.innerHTML = '<i class="fas fa-download"></i> Unduh Semua Gambar (ZIP)';
+        downloadAllBtn.innerHTML = '<i class="fas fa-file-archive"></i> UNDUH SEMUA (ZIP)';
     } catch (error) {
-        console.error(error);
         alert('Error saat membuat ZIP: ' + error.message);
         downloadAllBtn.disabled = false;
-        downloadAllBtn.innerHTML = '<i class="fas fa-download"></i> Unduh Semua Gambar (ZIP)';
+        downloadAllBtn.innerHTML = '<i class="fas fa-file-archive"></i> UNDUH SEMUA (ZIP)';
+        downloadProgressP.style.display = 'none';
     }
 });

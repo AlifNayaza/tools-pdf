@@ -57,7 +57,7 @@ class Y2KCanvasAnimation {
         this.ctx.fillRect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
         
         // Stroke
-        this.ctx.strokeStyle = '#000000';
+        this.ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = shape.opacity;
         this.ctx.strokeRect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
@@ -77,7 +77,7 @@ class Y2KCanvasAnimation {
         this.ctx.fill();
         
         // Stroke
-        this.ctx.strokeStyle = '#000000';
+        this.ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = shape.opacity;
         this.ctx.stroke();
@@ -104,7 +104,7 @@ class Y2KCanvasAnimation {
         this.ctx.fill();
         
         // Stroke
-        this.ctx.strokeStyle = '#000000';
+        this.ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = shape.opacity;
         this.ctx.stroke();
@@ -168,7 +168,7 @@ class Y2KCanvasAnimation {
         this.ctx.fill();
         
         // Stroke
-        this.ctx.strokeStyle = '#000000';
+        this.ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = shape.opacity;
         this.ctx.stroke();

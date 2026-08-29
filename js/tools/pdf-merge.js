@@ -9,11 +9,13 @@ const mergeBtn = document.getElementById('mergeBtn');
 const statusP = document.getElementById('status');
 const progressBarFill = document.getElementById('progressBarFill');
 const downloadLink = document.getElementById('downloadLink');
+const resetBtn = document.getElementById('resetBtn');
 
 const fileInfo = document.getElementById('fileInfo');
 const progressContainer = document.getElementById('progressContainer');
 const resultInfo = document.getElementById('resultInfo');
 
+const fileNameSpan = document.getElementById('fileName');
 const pdfCountSpan = document.getElementById('pdfCount');
 const totalSizeSpan = document.getElementById('totalSize');
 const totalPagesSpan = document.getElementById('totalPages');
@@ -32,6 +34,27 @@ function formatBytes(bytes, decimals = 2) {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
     return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
+
+function resetUI() {
+    const step1 = document.getElementById('step1');
+    if (step1) step1.style.display = 'block';
+    fileListContainer.style.display = 'none';
+    fileInfo.style.display = 'none';
+    mergeBtn.style.display = 'none';
+    progressContainer.style.display = 'none';
+    resultInfo.style.display = 'none';
+    mergeBtn.disabled = false;
+    mergeBtn.innerHTML = '<i class="fas fa-object-group"></i> GABUNG SEMUA PDF';
+    progressBarFill.style.width = '0%';
+    pdfFiles = [];
+    pdfList.innerHTML = '';
+    if (pdfFilesInput) pdfFilesInput.value = '';
+}
+
+window.handlePdfMergeReset = function() {
+    resetUI();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 async function getPdfPageCount(file) {
     return new Promise((resolve) => {
@@ -78,7 +101,8 @@ async function addPdfFiles(files) {
     const validFiles = Array.from(files).filter(f => f.type === 'application/pdf');
     
     if (validFiles.length === 0) {
-        alert('Silakan pilih file PDF yang valid!');
+        if (window.Toast) window.Toast.error('Silakan pilih file PDF yang valid!');
+        else alert('Silakan pilih file PDF yang valid!');
         return;
     }
     
@@ -87,7 +111,8 @@ async function addPdfFiles(files) {
     const newTotalSize = validFiles.reduce((sum, f) => sum + f.size, 0);
     
     if (currentTotalSize + newTotalSize > MAX_FILE_SIZE) {
-        alert(`Total ukuran file terlalu besar! Maksimal ${formatBytes(MAX_FILE_SIZE)}`);
+        if (window.Toast) window.Toast.error(`Total ukuran file terlalu besar! Maksimal ${formatBytes(MAX_FILE_SIZE)}`);
+        else alert(`Total ukuran file terlalu besar! Maksimal ${formatBytes(MAX_FILE_SIZE)}`);
         return;
     }
     
@@ -203,6 +228,7 @@ function updateStats() {
     const totalSize = pdfFiles.reduce((sum, p) => sum + p.file.size, 0);
     const totalPages = pdfFiles.reduce((sum, p) => sum + p.pageCount, 0);
     
+    if (fileNameSpan) fileNameSpan.textContent = pdfFiles.map(p => p.file.name).join(', ');
     pdfCountSpan.textContent = pdfFiles.length;
     totalSizeSpan.textContent = formatBytes(totalSize);
     totalPagesSpan.textContent = totalPages;
@@ -259,13 +285,21 @@ pdfFilesInput.addEventListener('change', (e) => {
     }
 });
 
+if (resetBtn) {
+    resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.handlePdfMergeReset();
+    });
+}
+
 addMoreBtn.addEventListener('click', () => {
     pdfFilesInput.click();
 });
 
 mergeBtn.addEventListener('click', async () => {
     if (pdfFiles.length < 2) {
-        alert('Minimal 2 PDF untuk digabung!');
+        if (window.Toast) window.Toast.warning('Pilih minimal 2 file PDF untuk digabungkan.');
+        else alert('Pilih minimal 2 file PDF untuk digabungkan.');
         return;
     }
     
@@ -297,7 +331,13 @@ mergeBtn.addEventListener('click', async () => {
         const mergedPdfBytes = await mergedPdf.save();
         
         progressContainer.style.display = 'none';
+        fileListContainer.style.display = 'none';
+        mergeBtn.style.display = 'none';
         resultInfo.style.display = 'block';
+
+        setTimeout(() => {
+            resultInfo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 50);
         
         mergedCountSpan.textContent = pdfFiles.length;
         mergedPagesSpan.textContent = totalPages;
@@ -311,9 +351,11 @@ mergeBtn.addEventListener('click', async () => {
         mergeBtn.disabled = false;
         mergeBtn.innerHTML = '<i class="fas fa-object-group"></i> Gabung Semua PDF';
         
+        if (window.Toast) window.Toast.success('File PDF berhasil digabungkan.');
     } catch (error) {
         console.error(error);
-        alert('Error saat menggabungkan PDF: ' + error.message);
+        if (window.Toast) window.Toast.error('Gagal menggabungkan PDF: ' + error.message);
+        else alert('Gagal menggabungkan PDF: ' + error.message);
         statusP.textContent = `Error: ${error.message}`;
         progressContainer.style.display = 'none';
         mergeBtn.disabled = false;

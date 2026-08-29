@@ -39,8 +39,9 @@
         gyroscope=(),
         accelerometer=()
     ">
-    <title>PDF KE GAMBAR 📷</title>
-    <link rel="stylesheet" href="style.css">
+    <title>GAMBAR KE PDF 📄</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body class="tool-page">
@@ -49,39 +50,38 @@
 
     <div class="card">
         <header class="card-header">
-            <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
-            <h1>PDF KE GAMBAR 📷</h1>
-            <p>Ekstrak halaman PDF menjadi gambar.</p>
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <h1>GAMBAR KE PDF 📄</h1>
+            <p>Konversi gambar menjadi dokumen PDF.</p>
         </header>
         <main class="card-body">
             <div class="step" id="step1">
-                <label for="pdfFile" class="file-label" id="dropArea">
-                    <i class="fas fa-file-pdf"></i>
-                    <span>PILIH FILE PDF</span>
-                    <small>MAX 100MB</small>
+                <label for="imageFiles" class="file-label" id="dropArea">
+                    <i class="fas fa-images"></i>
+                    <span>PILIH GAMBAR</span>
+                    <small>BISA BANYAK SEKALIGUS • JPG, PNG • MAX 100MB TOTAL</small>
                 </label>
-                <input type="file" id="pdfFile" accept=".pdf" hidden>
+                <input type="file" id="imageFiles" accept="image/jpeg,image/png,image/jpg" multiple hidden>
             </div>
             <div class="file-info" id="fileInfo" style="display: none;">
                 <p><strong>NAMA FILE:</strong> <span id="fileName"></span></p>
-                <p><strong>UKURAN:</strong> <span id="fileSize"></span></p>
-                <p><strong>HALAMAN:</strong> <span id="filePages"></span></p>
+                <p><strong>JUMLAH GAMBAR:</strong> <span id="imageCount"></span></p>
+                <p><strong>TOTAL UKURAN:</strong> <span id="totalSize"></span></p>
+            </div>
+            <div id="previewContainer" style="display: none;">
+                <h3>PREVIEW GAMBAR</h3>
+                <div id="imagePreviewList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; margin-top: 15px;"></div>
             </div>
             <div class="step" id="step2" style="display: none;">
-                <label for="imageFormat"><i class="fas fa-image"></i> FORMAT GAMBAR</label>
-                <select id="imageFormat" style="margin-bottom: 15px;">
-                    <option value="png">PNG (Kualitas Tinggi)</option>
-                    <option value="jpeg">JPEG (Ukuran Kecil)</option>
+                <label for="pageSize"><i class="fas fa-file-alt"></i> UKURAN HALAMAN PDF</label>
+                <select id="pageSize">
+                    <option value="fit">Sesuaikan dengan Gambar</option>
+                    <option value="a4">A4 (210 x 297 mm)</option>
+                    <option value="letter">Letter (216 x 279 mm)</option>
                 </select>
-                <label for="quality"><i class="fas fa-sliders-h"></i> KUALITAS OUTPUT</label>
-                <div class="quality-slider">
-                    <input type="range" id="quality" min="1" max="3" step="1" value="2">
-                    <span id="qualityValue">Sedang</span>
-                </div>
-                <small style="color: #666; font-size: 12px;">Rendah (1x) • Sedang (2x) • Tinggi (3x)</small>
             </div>
             <button id="convertBtn" style="display: none;">
-                <i class="fas fa-images"></i> KONVERSI KE GAMBAR
+                <i class="fas fa-file-pdf"></i> KONVERSI KE PDF
             </button>
             <div class="progress-container" id="progressContainer" style="display: none;">
                 <p id="status">MENGONVERSI...</p>
@@ -89,28 +89,25 @@
                     <div class="progress-bar-fill" id="progressBarFill"></div>
                 </div>
             </div>
-            <div id="previewContainer" style="display: none; margin-top: 20px;">
-                <h3>PREVIEW HASIL</h3>
-                <div id="imageResultList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; max-height: 400px; overflow-y: auto;"></div>
-            </div>
             <div class="result-info" id="resultInfo" style="display: none;">
-                <h2>BERHASIL! 🎉</h2>
+                <h2>DOKUMEN PDF SIAP</h2>
                 <div class="stats">
-                    <p>FILE ASLI: <strong id="originalName"></strong></p>
-                    <p>GAMBAR DIBUAT: <strong id="imageCount"></strong></p>
+                    <p>JUMLAH HALAMAN: <strong id="pageCount"></strong></p>
+                    <p>UKURAN PDF: <strong id="pdfSize"></strong></p>
                 </div>
-                <button id="downloadAllBtn" class="download-link" style="cursor: pointer;">
-                    <i class="fas fa-download"></i> UNDUH SEMUA (ZIP)
-                </button>
+                <a id="downloadLink" class="download-link"><i class="fas fa-download"></i> UNDUH PDF</a>
+                <button type="button" id="resetBtn" class="reset-btn" onclick="window.handleImageToPdfReset && window.handleImageToPdfReset()"><i class="fas fa-redo"></i> KONVERSI GAMBAR LAIN</button>
             </div>
         </main>
     </div>
     
     <!-- Load scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="canvas-animation.js"></script>
-    <script src="navbar.js"></script>
-    <script src="pdf-to-images.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="../js/shared/security.js"></script>
+    <script src="../js/shared/toast.js"></script>
+    <script src="../js/shared/pwa.js"></script>
+    <script src="../js/shared/canvas-animation.js"></script>
+    <script src="../js/shared/navbar.js"></script>
+    <script src="../js/tools/image-to-pdf.js"></script>
 </body>
 </html>

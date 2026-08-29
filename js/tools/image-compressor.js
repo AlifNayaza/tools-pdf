@@ -6,6 +6,7 @@ const compressBtn = document.getElementById('compressBtn');
 const statusP = document.getElementById('status');
 const progressBarFill = document.getElementById('progressBarFill');
 const downloadLink = document.getElementById('downloadLink');
+const resetBtn = document.getElementById('resetBtn');
 const previewImage = document.getElementById('previewImage');
 const resultImage = document.getElementById('resultImage');
 
@@ -49,12 +50,14 @@ function resetUI() {
 async function processFile(file) {
     const validTypes = ['image/jpeg', 'image/jpg', 'image/png'];
     if (!file || !validTypes.includes(file.type)) {
-        alert('Silakan pilih file gambar yang valid (JPG atau PNG)!');
+        if (window.Toast) window.Toast.error('Pilih file gambar JPG atau PNG yang valid.');
+        else alert('Pilih file gambar JPG atau PNG yang valid.');
         return;
     }
     
     if (file.size > MAX_FILE_SIZE) {
-        alert(`Ukuran file terlalu besar! Maksimal ${formatBytes(MAX_FILE_SIZE)}`);
+        if (window.Toast) window.Toast.error(`Ukuran file melebihi batas maksimal (${formatBytes(MAX_FILE_SIZE)}).`);
+        else alert(`Ukuran file melebihi batas maksimal (${formatBytes(MAX_FILE_SIZE)}).`);
         return;
     }
     
@@ -122,13 +125,30 @@ imageFileInput.addEventListener('change', (e) => {
     }
 });
 
+function handleImageCompressorReset() {
+    resetUI();
+    imageFileInput.value = '';
+    originalFile = null;
+    originalImage = null;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.handleImageCompressorReset = handleImageCompressorReset;
+
+if (resetBtn) {
+    resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleImageCompressorReset();
+    });
+}
+
 qualityInput.addEventListener('input', () => {
     qualityValueSpan.textContent = qualityInput.value;
 });
 
 compressBtn.addEventListener('click', async () => {
     if (!originalFile || !originalImage) {
-        alert('Silakan pilih gambar terlebih dahulu!');
+        if (window.Toast) window.Toast.warning('Pilih gambar terlebih dahulu.');
+        else alert('Pilih gambar terlebih dahulu.');
         return;
     }
 
@@ -156,7 +176,7 @@ compressBtn.addEventListener('click', async () => {
 
         // Selalu gunakan JPEG untuk kompresi yang lebih baik, kecuali PNG dengan transparansi
         let mimeType = 'image/jpeg';
-        let compressedDataUrl;
+        let targetCanvas = canvas;
         
         // Check jika PNG memiliki transparansi
         if (originalFile.type === 'image/png') {
@@ -172,11 +192,10 @@ compressBtn.addEventListener('click', async () => {
             
             if (hasTransparency) {
                 mimeType = 'image/png';
-                compressedDataUrl = canvas.toDataURL(mimeType, quality);
+                targetCanvas = canvas;
             } else {
-                // Konversi PNG tanpa transparansi ke JPEG
+                // Konversi PNG tanpa transparansi ke JPEG dengan latar belakang putih
                 mimeType = 'image/jpeg';
-                // Tambahkan background putih untuk konversi PNG ke JPEG
                 const tempCanvas = document.createElement('canvas');
                 const tempCtx = tempCanvas.getContext('2d');
                 tempCanvas.width = canvas.width;
@@ -185,24 +204,34 @@ compressBtn.addEventListener('click', async () => {
                 tempCtx.fillStyle = '#FFFFFF';
                 tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
                 tempCtx.drawImage(canvas, 0, 0);
-                
-                compressedDataUrl = tempCanvas.toDataURL(mimeType, quality);
+                targetCanvas = tempCanvas;
             }
         } else {
-            // Untuk JPEG, langsung kompres
-            compressedDataUrl = canvas.toDataURL(mimeType, quality);
+            mimeType = 'image/jpeg';
+            targetCanvas = canvas;
         }
         
-        // Konversi data URL ke blob
-        const response = await fetch(compressedDataUrl);
-        const blob = await response.blob();
+        // Buat Blob langsung dari canvas tanpa fetch (menghindari CSP connect-src block)
+        const blob = await new Promise((resolve, reject) => {
+            targetCanvas.toBlob((b) => {
+                if (b) resolve(b);
+                else reject(new Error('Gagal menghasilkan file gambar'));
+            }, mimeType, quality);
+        });
         
         progressBarFill.style.width = '100%';
         
         // Tampilkan hasil
         setTimeout(() => {
             progressContainer.style.display = 'none';
+            step2Div.style.display = 'none';
+            previewArea.style.display = 'none';
+            compressBtn.style.display = 'none';
             resultInfoDiv.style.display = 'block';
+
+            setTimeout(() => {
+                resultInfoDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 50);
 
             const originalSizeBytes = originalFile.size;
             const newSizeBytes = blob.size;
@@ -227,9 +256,8 @@ compressBtn.addEventListener('click', async () => {
                 sizeSavingsSpan.style.color = '#dc3545';
             }
 
-            resultImage.src = compressedDataUrl;
-
             const url = URL.createObjectURL(blob);
+            resultImage.src = url;
             downloadLink.href = url;
             const extension = mimeType === 'image/png' ? '.png' : '.jpg';
             const baseName = originalFile.name.replace(/\.[^/.]+$/, '');
@@ -237,13 +265,40 @@ compressBtn.addEventListener('click', async () => {
 
             compressBtn.disabled = false;
             compressBtn.innerHTML = '<i class="fas fa-compress-alt"></i> Kompres Gambar';
+
+            if (window.Toast) window.Toast.success('Gambar berhasil dikompres.');
         }, 300);
         
     } catch (error) {
         console.error(error);
+        if (window.Toast) window.Toast.error('Gagal mengompres gambar: ' + error.message);
         statusP.textContent = `Error: ${error.message}`;
         progressContainer.style.display = 'none';
         compressBtn.disabled = false;
         compressBtn.innerHTML = '<i class="fas fa-compress-alt"></i> Coba Lagi';
     }
 });
+
+const copyImageBtn = document.getElementById('copyImageBtn');
+if (copyImageBtn) {
+    copyImageBtn.addEventListener('click', async () => {
+        if (!resultImage.src) return;
+
+        try {
+            const canvas = document.createElement('canvas');
+            canvas.width = resultImage.naturalWidth || 500;
+            canvas.height = resultImage.naturalHeight || 500;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(resultImage, 0, 0);
+            const copyBlob = await new Promise(r => canvas.toBlob(r, 'image/png'));
+
+            await navigator.clipboard.write([
+                new ClipboardItem({ 'image/png': copyBlob })
+            ]);
+            if (window.Toast) window.Toast.success('Gambar berhasil disalin ke clipboard! Siap di-paste (Ctrl+V).');
+        } catch (err) {
+            console.warn('Clipboard write failed:', err);
+            if (window.Toast) window.Toast.warning('Browser tidak mendukung penyalinan langsung gambar ke clipboard.');
+        }
+    });
+}

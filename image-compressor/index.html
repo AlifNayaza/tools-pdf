@@ -40,7 +40,8 @@
         accelerometer=()
     ">
     <title>KOMPRES GAMBAR 🖼️</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body class="tool-page">
@@ -49,7 +50,7 @@
 
     <div class="card">
         <header class="card-header">
-            <a href="index.html" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
             <h1>KOMPRES GAMBAR 🖼️</h1>
             <p>Kompres JPG, PNG dengan mudah dan cepat.</p>
         </header>
@@ -88,7 +89,7 @@
                 </div>
             </div>
             <div class="result-info" id="resultInfo" style="display: none;">
-                <h2>BERHASIL! 🎉</h2>
+                <h2>KOMPRESI SELESAI</h2>
                 <div class="stats">
                     <p>UKURAN ASLI: <strong id="originalSize"></strong></p>
                     <p>UKURAN BARU: <strong id="newSize"></strong></p>
@@ -98,14 +99,23 @@
                     <h3>PREVIEW HASIL</h3>
                     <img id="resultImage" alt="Result">
                 </div>
-                <a id="downloadLink" class="download-link"><i class="fas fa-download"></i> UNDUH GAMBAR</a>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a id="downloadLink" class="download-link" style="flex: 1; min-width: 200px;"><i class="fas fa-download"></i> UNDUH GAMBAR</a>
+                    <button type="button" id="copyImageBtn" class="download-link copy-btn-action" style="flex: 1; min-width: 200px; cursor: pointer;">
+                        <i class="fas fa-copy"></i> SALIN GAMBAR
+                    </button>
+                </div>
+                <button type="button" id="resetBtn" class="reset-btn" onclick="window.handleImageCompressorReset && window.handleImageCompressorReset()"><i class="fas fa-redo"></i> KOMPRES GAMBAR LAIN</button>
             </div>
         </main>
     </div>
     
     <!-- Load scripts -->
-    <script src="canvas-animation.js"></script>
-    <script src="navbar.js"></script>
-    <script src="image-compressor.js"></script>
+    <script src="../js/shared/security.js"></script>
+    <script src="../js/shared/toast.js"></script>
+    <script src="../js/shared/pwa.js"></script>
+    <script src="../js/shared/canvas-animation.js"></script>
+    <script src="../js/shared/navbar.js"></script>
+    <script src="../js/tools/image-compressor.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@ const convertBtn = document.getElementById('convertBtn');
 const statusP = document.getElementById('status');
 const progressBarFill = document.getElementById('progressBarFill');
 const downloadLink = document.getElementById('downloadLink');
+const resetBtn = document.getElementById('resetBtn');
 const pageSizeSelect = document.getElementById('pageSize');
 
 const fileInfoDiv = document.getElementById('fileInfo');
@@ -14,6 +15,7 @@ const progressContainer = document.getElementById('progressContainer');
 const resultInfoDiv = document.getElementById('resultInfo');
 
 const imageCountSpan = document.getElementById('imageCount');
+const fileNameSpan = document.getElementById('fileName');
 const totalSizeSpan = document.getElementById('totalSize');
 const pageCountSpan = document.getElementById('pageCount');
 const pdfSizeSpan = document.getElementById('pdfSize');
@@ -47,7 +49,8 @@ async function processFiles(files) {
     selectedFiles = Array.from(files).filter(file => validTypes.includes(file.type));
     
     if (selectedFiles.length === 0) {
-        alert('Silakan pilih file gambar yang valid (JPG atau PNG)!');
+        if (window.Toast) window.Toast.error('Pilih file gambar JPG atau PNG yang valid.');
+        else alert('Pilih file gambar JPG atau PNG yang valid.');
         return;
     }
     
@@ -55,12 +58,14 @@ async function processFiles(files) {
     const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
     
     if (totalSize > MAX_FILE_SIZE) {
-        alert(`Total ukuran file terlalu besar! Maksimal ${formatBytes(MAX_FILE_SIZE)}`);
+        if (window.Toast) window.Toast.error(`Ukuran file melebihi batas maksimal (${formatBytes(MAX_FILE_SIZE)}).`);
+        else alert(`Ukuran file melebihi batas maksimal (${formatBytes(MAX_FILE_SIZE)}).`);
         return;
     }
     
     resetUI();
     
+    if (fileNameSpan) fileNameSpan.textContent = selectedFiles.map(f => f.name).join(', ');
     imageCountSpan.textContent = selectedFiles.length;
     totalSizeSpan.textContent = formatBytes(totalSize);
     fileInfoDiv.style.display = 'block';
@@ -136,9 +141,25 @@ imageFilesInput.addEventListener('change', (e) => {
     }
 });
 
+function handleImageToPdfReset() {
+    resetUI();
+    imageFilesInput.value = '';
+    selectedFiles = [];
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.handleImageToPdfReset = handleImageToPdfReset;
+
+if (resetBtn) {
+    resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleImageToPdfReset();
+    });
+}
+
 convertBtn.addEventListener('click', async () => {
     if (selectedFiles.length === 0) {
-        alert('Silakan pilih gambar terlebih dahulu!');
+        if (window.Toast) window.Toast.warning('Pilih file gambar terlebih dahulu.');
+        else alert('Pilih file gambar terlebih dahulu.');
         return;
     }
 
@@ -231,7 +252,14 @@ convertBtn.addEventListener('click', async () => {
 
         setTimeout(() => {
             progressContainer.style.display = 'none';
+            previewContainer.style.display = 'none';
+            step2Div.style.display = 'none';
+            convertBtn.style.display = 'none';
             resultInfoDiv.style.display = 'block';
+
+            setTimeout(() => {
+                resultInfoDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 50);
 
             pageCountSpan.textContent = selectedFiles.length;
             pdfSizeSpan.textContent = formatBytes(pdfBytes.length);
@@ -245,11 +273,14 @@ convertBtn.addEventListener('click', async () => {
 
             convertBtn.disabled = false;
             convertBtn.innerHTML = '<i class="fas fa-file-pdf"></i> Konversi ke PDF';
+
+            if (window.Toast) window.Toast.success('Gambar berhasil dikonversi ke PDF.');
         }, 300);
 
     } catch (error) {
         console.error('Error:', error);
-        alert('Error saat konversi: ' + error.message);
+        if (window.Toast) window.Toast.error('Gagal mengonversi gambar: ' + error.message);
+        else alert('Gagal mengonversi gambar: ' + error.message);
         statusP.textContent = `Error: ${error.message}`;
         progressContainer.style.display = 'none';
         convertBtn.disabled = false;

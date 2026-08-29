@@ -1,0 +1,70 @@
+[build]
+  publish = "."
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "no-referrer-when-downgrade"
+
+[[redirects]]
+  from = "/pdf-compressor"
+  to = "/pdf-compressor/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pdf-merge"
+  to = "/pdf-merge/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pdf-split"
+  to = "/pdf-split/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pdf-to-images"
+  to = "/pdf-to-images/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/image-to-pdf"
+  to = "/image-to-pdf/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/image-compressor"
+  to = "/image-compressor/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/image-format-converter"
+  to = "/image-format-converter/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pdf-to-text"
+  to = "/pdf-to-text/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pdf-rotate"
+  to = "/pdf-rotate/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/image-resizer"
+  to = "/image-resizer/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pdf-to-long-image"
+  to = "/pdf-to-long-image/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/html-to-pdf"
+  to = "/html-to-pdf/index.html"
+  status = 200

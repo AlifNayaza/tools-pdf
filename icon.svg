@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="96" fill="#00f0ff" stroke="#000000" stroke-width="24"/>
+  <rect x="64" y="64" width="384" height="384" rx="48" fill="#ffffff" stroke="#000000" stroke-width="20"/>
+  <!-- Bolt Icon -->
+  <path d="M288 64 L144 288 L256 288 L224 448 L368 224 L256 224 Z" fill="#ff006e" stroke="#000000" stroke-width="16" stroke-linejoin="round"/>
+</svg>

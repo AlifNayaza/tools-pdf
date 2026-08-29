@@ -9,6 +9,7 @@ const compressBtn = document.getElementById('compressBtn');
 const statusP = document.getElementById('status');
 const progressBarFill = document.getElementById('progressBarFill');
 const downloadLink = document.getElementById('downloadLink');
+const resetBtn = document.getElementById('resetBtn');
 
 const step2Div = document.getElementById('step2');
 const fileInfoDiv = document.getElementById('fileInfo');
@@ -25,7 +26,6 @@ const sizeSavingsSpan = document.getElementById('sizeSavings');
 let originalFile = null;
 const MAX_FILE_SIZE = 100 * 1024 * 1024;
 
-// Wait for FileValidator to load
 let fileValidatorReady = false;
 
 function waitForFileValidator() {
@@ -35,7 +35,6 @@ function waitForFileValidator() {
             resolve();
             return;
         }
-        
         const checkInterval = setInterval(() => {
             if (window.FileValidator) {
                 fileValidatorReady = true;
@@ -43,15 +42,13 @@ function waitForFileValidator() {
                 resolve();
             }
         }, 100);
-        
         setTimeout(() => {
             clearInterval(checkInterval);
             resolve();
-        }, 5000);
+        }, 3000);
     });
 }
 
-// Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
     await waitForFileValidator();
 });
@@ -75,41 +72,23 @@ function resetUI() {
     progressBarFill.style.width = '0%';
 }
 
-// Basic file validation (fallback)
 function basicValidateFile(file) {
     const errors = [];
-    
     if (!file || !(file instanceof File)) {
         errors.push('File tidak valid');
         return { valid: false, errors };
     }
-    
     if (file.type !== 'application/pdf') {
         errors.push('File harus berformat PDF');
     }
-    
     if (file.size > MAX_FILE_SIZE) {
         errors.push(`Ukuran file terlalu besar (max ${formatBytes(MAX_FILE_SIZE)})`);
     }
-    
-    if (file.size === 0) {
-        errors.push('File kosong');
-    }
-    
-    if (file.name.includes('..') || file.name.includes('/') || file.name.includes('\\')) {
-        errors.push('Nama file tidak valid');
-    }
-    
-    return {
-        valid: errors.length === 0,
-        errors: errors
-    };
+    return { valid: errors.length === 0, errors: errors };
 }
 
 async function processFile(file) {
-    // Validation dengan fallback
     let validation;
-    
     if (fileValidatorReady && window.FileValidator) {
         validation = await window.FileValidator.validateFile(file);
     } else {
@@ -117,28 +96,15 @@ async function processFile(file) {
     }
     
     if (!validation.valid) {
-        alert('❌ File tidak valid!\n\n' + validation.errors.join('\n'));
+        if (window.Toast) window.Toast.error('File tidak valid: ' + validation.errors.join(', '));
+        else alert('❌ File tidak valid!\n\n' + validation.errors.join('\n'));
         pdfFileInput.value = '';
         return;
     }
 
-    // Additional basic checks
-    if (!file || file.type !== 'application/pdf') {
-        alert('Silakan pilih file PDF yang valid!');
-        pdfFileInput.value = '';
-        return;
-    }
-    
-    if (file.size > MAX_FILE_SIZE) {
-        alert(`Ukuran file terlalu besar! Maksimal ${formatBytes(MAX_FILE_SIZE)}`);
-        pdfFileInput.value = '';
-        return;
-    }
-    
     originalFile = file;
     resetUI();
 
-    // Sanitize filename
     let displayName = file.name;
     if (fileValidatorReady && window.FileValidator) {
         displayName = window.FileValidator.sanitizeFileName(file.name);
@@ -147,7 +113,6 @@ async function processFile(file) {
     fileNameSpan.textContent = displayName;
     fileSizeSpan.textContent = formatBytes(originalFile.size);
     fileInfoDiv.style.display = 'block';
-    
     step2Div.style.display = 'block';
     compressBtn.style.display = 'flex';
 
@@ -159,11 +124,11 @@ async function processFile(file) {
             const pdfDoc = await pdfjsLib.getDocument({ data: pdfData }).promise;
             
             if (pdfDoc.numPages > 500) {
-                alert('⚠️ PDF terlalu banyak halaman (max 500 halaman)');
+                if (window.Toast) window.Toast.warning('PDF terlalu banyak halaman (max 500 halaman)');
+                else alert('⚠️ PDF terlalu banyak halaman (max 500 halaman)');
                 resetUI();
                 return;
             }
-            
             filePagesSpan.textContent = pdfDoc.numPages;
         } catch (error) {
             filePagesSpan.textContent = 'Tidak dapat membaca halaman';
@@ -171,9 +136,9 @@ async function processFile(file) {
     };
 }
 
-// Drag and Drop Events
+// Global Drag & Drop Prevention (Mencegah file terbuka langsung di browser)
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
 });
 
 function preventDefaults(e) {
@@ -181,16 +146,13 @@ function preventDefaults(e) {
     e.stopPropagation();
 }
 
+// Khusus efek untuk Drop Area
 ['dragenter', 'dragover'].forEach(eventName => {
-    dropArea.addEventListener(eventName, () => {
-        dropArea.classList.add('drag-over');
-    }, false);
+    dropArea.addEventListener(eventName, () => dropArea.classList.add('drag-over'), false);
 });
 
 ['dragleave', 'drop'].forEach(eventName => {
-    dropArea.addEventListener(eventName, () => {
-        dropArea.classList.remove('drag-over');
-    }, false);
+    dropArea.addEventListener(eventName, () => dropArea.classList.remove('drag-over'), false);
 });
 
 dropArea.addEventListener('drop', async (e) => {
@@ -198,46 +160,57 @@ dropArea.addEventListener('drop', async (e) => {
     const files = dt.files;
     
     if (files.length > 1) {
-        alert('⚠️ Hanya bisa upload 1 file sekaligus');
+        if (window.Toast) window.Toast.warning('Hanya bisa upload 1 file sekaligus');
+        else alert('⚠️ Hanya bisa upload 1 file sekaligus');
         return;
     }
-    
     if (files.length > 0) {
         await processFile(files[0]);
     }
 }, false);
 
-dropArea.addEventListener('click', () => {
-    pdfFileInput.click();
-});
+// EVENT INI DIHAPUS karena menyebabkan bentrok dengan tag <label> bawaan HTML
+// dropArea.addEventListener('click', () => { pdfFileInput.click(); });
 
 pdfFileInput.addEventListener('change', async (e) => {
     if (e.target.files.length > 0) {
         await processFile(e.target.files[0]);
+        // Reset input agar file yang sama bisa dipilih ulang jika terjadi error
+        e.target.value = ''; 
     }
 });
+
+function handlePdfCompressorReset() {
+    resetUI();
+    pdfFileInput.value = '';
+    originalFile = null;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.handlePdfCompressorReset = handlePdfCompressorReset;
+
+if (resetBtn) {
+    resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handlePdfCompressorReset();
+    });
+}
 
 qualityInput.addEventListener('input', () => {
     let value = parseFloat(qualityInput.value);
     if (isNaN(value) || value < 0.1 || value > 1.0) {
         value = 0.7;
-        qualityInput.value = 0.7;
     }
     qualityValueSpan.textContent = value.toFixed(2);
 });
 
 compressBtn.addEventListener('click', async () => {
     if (!originalFile) {
-        alert('Silakan pilih file terlebih dahulu!');
+        if (window.Toast) window.Toast.warning('Silakan pilih file terlebih dahulu!');
+        else alert('Silakan pilih file terlebih dahulu!');
         return;
     }
 
     const quality = parseFloat(qualityInput.value);
-    if (isNaN(quality) || quality < 0.1 || quality > 1.0) {
-        alert('⚠️ Nilai kualitas tidak valid');
-        return;
-    }
-
     compressBtn.disabled = true;
     compressBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengompres...';
     progressContainer.style.display = 'block';
@@ -253,9 +226,10 @@ compressBtn.addEventListener('click', async () => {
                 const newPdfDoc = await PDFLib.PDFDocument.create();
                 const numPages = pdfDoc.numPages;
 
-                if (numPages > 500) {
-                    throw new Error('Terlalu banyak halaman');
-                }
+                // Scale dinamis: kualitas rendah = resolusi lebih kecil → file lebih kecil
+                // quality 0.1 → scale 0.4 | quality 0.7 → scale 0.76 | quality 1.0 → scale 1.0
+                const renderScale = 0.3 + (quality * 0.7);
+                const maxDimension = 2048;
 
                 for (let i = 1; i <= numPages; i++) {
                     const progress = (i / numPages) * 100;
@@ -263,105 +237,81 @@ compressBtn.addEventListener('click', async () => {
                     progressBarFill.style.width = `${progress}%`;
 
                     const page = await pdfDoc.getPage(i);
-                    const viewport = page.getViewport({ scale: 1.5 });
-                    const canvas = document.createElement('canvas');
-                    const context = canvas.getContext('2d');
-                    
-                    // Limit canvas size
-                    const maxDimension = 4096;
-                    if (viewport.width > maxDimension || viewport.height > maxDimension) {
-                        const scale = Math.min(maxDimension / viewport.width, maxDimension / viewport.height);
-                        const newViewport = page.getViewport({ scale: scale });
-                        canvas.width = newViewport.width;
-                        canvas.height = newViewport.height;
-                        await page.render({ canvasContext: context, viewport: newViewport }).promise;
-                    } else {
-                        canvas.height = viewport.height;
-                        canvas.width = viewport.width;
-                        await page.render({ canvasContext: context, viewport: viewport }).promise;
+                    const baseViewport = page.getViewport({ scale: 1 });
+
+                    // Hitung scale final agar tidak melebihi maxDimension
+                    let finalScale = renderScale;
+                    const maxSide = Math.max(baseViewport.width, baseViewport.height);
+                    if (maxSide * finalScale > maxDimension) {
+                        finalScale = maxDimension / maxSide;
                     }
 
-                    // Convert canvas to blob directly (avoid data URL fetch)
-                    const jpegBlob = await new Promise(resolve => {
-                        canvas.toBlob(resolve, 'image/jpeg', quality);
-                    });
+                    const viewport = page.getViewport({ scale: finalScale });
+                    const canvas = document.createElement('canvas');
+                    const context = canvas.getContext('2d');
+                    canvas.width = Math.floor(viewport.width);
+                    canvas.height = Math.floor(viewport.height);
+
+                    await page.render({ canvasContext: context, viewport }).promise;
+
+                    const jpegBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
                     const jpegImageBytes = await jpegBlob.arrayBuffer();
                     const jpegImage = await newPdfDoc.embedJpg(jpegImageBytes);
-                    const newPage = newPdfDoc.addPage([jpegImage.width, jpegImage.height]);
-                    newPage.drawImage(jpegImage, { 
-                        x: 0, 
-                        y: 0, 
-                        width: jpegImage.width, 
-                        height: jpegImage.height 
-                    });
+                    const newPage = newPdfDoc.addPage([canvas.width, canvas.height]);
+                    newPage.drawImage(jpegImage, { x: 0, y: 0, width: canvas.width, height: canvas.height });
 
-                    // Clear canvas
                     context.clearRect(0, 0, canvas.width, canvas.height);
                 }
 
                 const newPdfBytes = await newPdfDoc.save();
-
                 progressContainer.style.display = 'none';
+                step2Div.style.display = 'none';
+                compressBtn.style.display = 'none';
                 resultInfoDiv.style.display = 'block';
+
+                setTimeout(() => {
+                    resultInfoDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 50);
 
                 const originalSizeBytes = originalFile.size;
                 const newSizeBytes = newPdfBytes.length;
                 const savingsPercent = 100 - (newSizeBytes / originalSizeBytes * 100);
 
                 originalSizeSpan.textContent = formatBytes(originalSizeBytes);
-                newSizeSpan.textContent = formatBytes(newSizeBytes);
-                sizeSavingsSpan.textContent = `${savingsPercent.toFixed(2)}%`;
 
-                // Sanitize filename
                 let downloadName = originalFile.name;
-                if (fileValidatorReady && window.FileValidator) {
-                    downloadName = window.FileValidator.sanitizeFileName(originalFile.name);
-                }
-                
-                const blob = new Blob([newPdfBytes], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                downloadLink.href = url;
-                downloadLink.download = `compressed_${downloadName}`;
 
-                // Auto revoke URL after download
-                downloadLink.addEventListener('click', () => {
-                    setTimeout(() => {
-                        URL.revokeObjectURL(url);
-                    }, 100);
-                }, { once: true });
+                if (newSizeBytes >= originalSizeBytes) {
+                    // Hasil kompresi malah lebih besar — kembalikan file asli
+                    newSizeSpan.textContent = formatBytes(originalSizeBytes);
+                    sizeSavingsSpan.textContent = `0% (File sudah optimal)`;
+
+                    const originalBlob = new Blob([event.target.result], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(originalBlob);
+                    downloadLink.href = url;
+                    downloadLink.download = downloadName;
+                } else {
+                    newSizeSpan.textContent = formatBytes(newSizeBytes);
+                    sizeSavingsSpan.textContent = `${savingsPercent.toFixed(2)}%`;
+
+                    const blob = new Blob([newPdfBytes], { type: 'application/pdf' });
+                    const url = URL.createObjectURL(blob);
+                    downloadLink.href = url;
+                    downloadLink.download = `compressed_${downloadName}`;
+                }
 
                 compressBtn.disabled = false;
                 compressBtn.innerHTML = '<i class="fas fa-cogs"></i> Mulai Kompresi';
-                
-            } catch (innerError) {
-                throw innerError;
-            }
-        };
 
-        fileReader.onerror = () => {
-            throw new Error('Gagal membaca file');
+                if (window.Toast) window.Toast.success('File PDF berhasil dikompres.');
+            } catch (innerError) { throw innerError; }
         };
-        
     } catch (error) {
+        if (window.Toast) window.Toast.error('Gagal mengompres PDF: ' + error.message);
         statusP.textContent = `Error: ${error.message}`;
         statusP.style.color = '#ff006e';
         progressContainer.style.display = 'block';
         compressBtn.disabled = false;
         compressBtn.innerHTML = '<i class="fas fa-cogs"></i> Coba Lagi';
-        
-        if (originalFile) {
-            originalFile = null;
-        }
-    }
-});
-
-// Clear data on page unload
-window.addEventListener('beforeunload', () => {
-    if (originalFile) {
-        originalFile = null;
-    }
-    
-    if (downloadLink.href && downloadLink.href.startsWith('blob:')) {
-        URL.revokeObjectURL(downloadLink.href);
     }
 });

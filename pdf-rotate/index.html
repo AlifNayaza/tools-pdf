@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' data: blob:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <title>PUTAR PDF 🔄</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body class="tool-page">
+    <canvas id="backgroundCanvas"></canvas>
+
+    <div class="card">
+        <header class="card-header">
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <h1>PUTAR PDF 🔄</h1>
+            <p>Perbaiki orientasi halaman PDF yang terbalik atau miring secara permanen.</p>
+        </header>
+        <main class="card-body">
+            <div class="step" id="step1">
+                <label for="pdfFile" class="file-label" id="dropArea">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>PILIH FILE PDF</span>
+                    <small>PDF • MAX 100MB • BISA DRAG & DROP ATAU PASTE (CTRL+V)</small>
+                </label>
+                <input type="file" id="pdfFile" accept="application/pdf" hidden>
+            </div>
+
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <p><strong>NAMA FILE:</strong> <span id="fileName"></span></p>
+                <p><strong>UKURAN:</strong> <span id="fileSize"></span></p>
+                <p><strong>JUMLAH HALAMAN:</strong> <span id="filePages"></span></p>
+            </div>
+
+            <div id="rotateEditorContainer" style="display: none;">
+                <div class="rotate-controls-bar">
+                    <button type="button" class="rotate-control-btn" id="rotateAllCWBtn">
+                        <i class="fas fa-redo"></i> PUTAR SEMUA 90° KANAN
+                    </button>
+                    <button type="button" class="rotate-control-btn" id="rotateAllCCWBtn">
+                        <i class="fas fa-undo"></i> PUTAR SEMUA 90° KIRI
+                    </button>
+                    <button type="button" class="rotate-control-btn" id="resetRotationBtn" style="background: #ffffff !important;">
+                        <i class="fas fa-sync-alt"></i> RESET PUTARAN
+                    </button>
+                </div>
+
+                <div class="rotate-grid" id="rotateGrid"></div>
+
+                <button id="savePdfBtn" style="margin-top: 15px;">
+                    <i class="fas fa-save"></i> SIMPAN PDF BARU
+                </button>
+            </div>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <p id="status">MEMPROSES PDF...</p>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <div class="result-info" id="resultInfo" style="display: none;">
+                <h2>ROTASI SELESAI</h2>
+                <div class="stats">
+                    <p>FILE ASLI: <strong id="resFileName">—</strong></p>
+                    <p>UKURAN FILE: <strong id="resFileSize">—</strong></p>
+                    <p>TOTAL HALAMAN: <strong id="resPageCount">—</strong></p>
+                </div>
+                <a id="downloadLink" class="download-link"><i class="fas fa-download"></i> UNDUH PDF HASIL ROTASI</a>
+                <button type="button" id="resetBtn" class="reset-btn" onclick="window.handlePdfRotateReset && window.handlePdfRotateReset()"><i class="fas fa-redo"></i> PUTAR PDF LAIN</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="../js/shared/security.js"></script>
+    <script src="../js/shared/toast.js"></script>
+    <script src="../js/shared/pwa.js"></script>
+    <script src="../js/shared/canvas-animation.js"></script>
+    <script src="../js/shared/navbar.js"></script>
+    <script src="../js/tools/pdf-rotate.js"></script>
+</body>
+</html>

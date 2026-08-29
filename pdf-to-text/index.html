@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF KE TEKS & MARKDOWN 📄</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body class="tool-page">
+    <canvas id="backgroundCanvas"></canvas>
+
+    <div class="card">
+        <header class="card-header">
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <h1>PDF KE TEKS & MARKDOWN 📄</h1>
+            <p>Ekstrak tulisan dari dokumen PDF ke file TXT atau Markdown.</p>
+        </header>
+        <main class="card-body">
+            <div class="step" id="step1">
+                <label for="pdfFile" class="file-label" id="dropArea">
+                    <i class="fas fa-file-alt"></i>
+                    <span>PILIH FILE PDF</span>
+                    <small>MAX 100MB</small>
+                </label>
+                <input type="file" id="pdfFile" accept=".pdf" hidden>
+            </div>
+
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <p><strong>NAMA FILE:</strong> <span id="fileName"></span></p>
+                <p><strong>HALAMAN:</strong> <span id="filePages"></span></p>
+            </div>
+
+            <button id="extractBtn" style="display: none;">
+                <i class="fas fa-quote-left"></i> EKSTRAK TEKS
+            </button>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <p id="status">MENGEKSTRAK TEKS...</p>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <div class="result-info" id="resultInfo" style="display: none;">
+                <h2>EKSTRAKSI SELESAI</h2>
+                <div style="margin: 20px 0;">
+                    <label style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span><i class="fas fa-file-signature"></i> TEKS HASIL EKSTRAKSI:</span>
+                        <button id="copyBtn" style="padding: 6px 12px; font-size: 12px; cursor: pointer; background: #00f0ff; color: #000; border: 2px solid #000;">
+                            <i class="fas fa-copy"></i> SALIN TEKS
+                        </button>
+                    </label>
+                    <textarea id="extractedTextArea" rows="12" style="width: 100%; padding: 15px; border: 3px solid #000; font-family: var(--font-mono); font-size: 13px; resize: vertical;" readonly></textarea>
+                </div>
+
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 15px;">
+                    <button id="downloadTxtBtn" class="download-link" style="cursor: pointer; flex: 1; min-width: 200px;">
+                        <i class="fas fa-file-download"></i> UNDUH .TXT
+                    </button>
+                    <button id="downloadMdBtn" class="download-link" style="cursor: pointer; flex: 1; min-width: 200px; background: #ff006e; color: #fff;">
+                        <i class="fab fa-markdown"></i> UNDUH .MD
+                    </button>
+                </div>
+                <button type="button" id="resetBtn" class="reset-btn" onclick="window.handlePdfToTextReset && window.handlePdfToTextReset()"><i class="fas fa-redo"></i> EKSTRAK PDF LAIN</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Load scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script src="../js/shared/security.js"></script>
+    <script src="../js/shared/toast.js"></script>
+    <script src="../js/shared/pwa.js"></script>
+    <script src="../js/shared/canvas-animation.js"></script>
+    <script src="../js/shared/navbar.js"></script>
+    <script src="../js/tools/pdf-to-text.js"></script>
+</body>
+</html>

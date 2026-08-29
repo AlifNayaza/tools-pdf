@@ -1,0 +1,18 @@
+{
+  "name": "PDF & Image Tools Suite",
+  "short_name": "PDF Tools",
+  "description": "Tools gratis, cepat, dan aman untuk mengelola PDF dan Gambar langsung di browser.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#00f0ff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

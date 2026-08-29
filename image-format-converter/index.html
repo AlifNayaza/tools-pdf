@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KONVERSI FORMAT GAMBAR 🖼️</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body class="tool-page">
+    <canvas id="backgroundCanvas"></canvas>
+
+    <div class="card">
+        <header class="card-header">
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <h1>KONVERSI FORMAT GAMBAR 🖼️</h1>
+            <p>Konversi instan antar format WEBP, PNG, JPG, dan SVG.</p>
+        </header>
+        <main class="card-body">
+            <div class="step" id="step1">
+                <label for="imageFiles" class="file-label" id="dropArea">
+                    <i class="fas fa-images"></i>
+                    <span>PILIH GAMBAR</span>
+                    <small>WEBP, PNG, JPG, SVG • BISA BANYAK SEKALIGUS • MAX 100MB TOTAL</small>
+                </label>
+                <input type="file" id="imageFiles" accept="image/png,image/jpeg,image/webp,image/svg+xml" multiple hidden>
+            </div>
+
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <p><strong>NAMA FILE:</strong> <span id="fileName"></span></p>
+                <p><strong>JUMLAH GAMBAR:</strong> <span id="imageCount"></span></p>
+                <p><strong>TOTAL UKURAN:</strong> <span id="totalSize"></span></p>
+            </div>
+
+            <div class="step" id="step2" style="display: none;">
+                <label for="targetFormat"><i class="fas fa-exchange-alt"></i> FORMAT TARGET</label>
+                <select id="targetFormat" style="margin-bottom: 15px;">
+                    <option value="png">PNG (Transparansi & Quality Terbaik)</option>
+                    <option value="jpeg">JPEG (Ukuran File Lebih Kecil)</option>
+                    <option value="webp">WEBP (Format Web Modern)</option>
+                </select>
+
+                <div id="qualityControl" style="margin-top: 15px;">
+                    <label for="quality"><i class="fas fa-sliders-h"></i> KUALITAS OUTPUT</label>
+                    <div class="quality-slider">
+                        <input type="range" id="quality" min="0.1" max="1.0" step="0.05" value="0.9">
+                        <span id="qualityValue">0.90</span>
+                    </div>
+                </div>
+            </div>
+
+            <button id="convertBtn" style="display: none;">
+                <i class="fas fa-sync-alt"></i> KONVERSI GAMBAR
+            </button>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <p id="status">MENGONVERSI...</p>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <div class="result-info" id="resultInfo" style="display: none;">
+                <h2>KONVERSI SELESAI</h2>
+                <div class="stats">
+                    <p>GAMBAR DIKONVERSI: <strong id="convertedCount"></strong></p>
+                    <p>FORMAT BARU: <strong id="outputFormatLabel"></strong></p>
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; margin-top: 10px;">
+                    <button id="downloadOneByOneBtn" class="download-link" style="cursor: pointer; flex: 1; min-width: 200px;">
+                        <i class="fas fa-images"></i> UNDUH SATU PER SATU
+                    </button>
+                    <button id="downloadAllBtn" class="download-link" style="cursor: pointer; flex: 1; min-width: 200px;">
+                        <i class="fas fa-file-archive"></i> UNDUH SEMUA (ZIP)
+                    </button>
+                </div>
+                <button type="button" id="resetBtn" class="reset-btn" onclick="window.handleImageConverterReset && window.handleImageConverterReset()"><i class="fas fa-redo"></i> KONVERSI GAMBAR LAIN</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Load scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="../js/shared/security.js"></script>
+    <script src="../js/shared/toast.js"></script>
+    <script src="../js/shared/pwa.js"></script>
+    <script src="../js/shared/canvas-animation.js"></script>
+    <script src="../js/shared/navbar.js"></script>
+    <script src="../js/tools/image-format-converter.js"></script>
+</body>
+</html>

@@ -10,6 +10,7 @@ const splitBtn = document.getElementById('splitBtn');
 const statusP = document.getElementById('status');
 const progressBarFill = document.getElementById('progressBarFill');
 const downloadAllBtn = document.getElementById('downloadAllBtn');
+const resetBtn = document.getElementById('resetBtn');
 
 const fileInfo = document.getElementById('fileInfo');
 const progressContainer = document.getElementById('progressContainer');
@@ -56,12 +57,14 @@ function resetUI() {
 
 async function processFile(file) {
     if (!file || file.type !== 'application/pdf') {
-        alert('Silakan pilih file PDF yang valid!');
+        if (window.Toast) window.Toast.error('Pilih file PDF yang valid.');
+        else alert('Pilih file PDF yang valid.');
         return;
     }
     
     if (file.size > MAX_FILE_SIZE) {
-        alert(`Ukuran file terlalu besar! Maksimal ${formatBytes(MAX_FILE_SIZE)}`);
+        if (window.Toast) window.Toast.error(`Ukuran file melebihi batas maksimal (${formatBytes(MAX_FILE_SIZE)}).`);
+        else alert(`Ukuran file melebihi batas maksimal (${formatBytes(MAX_FILE_SIZE)}).`);
         return;
     }
     
@@ -232,9 +235,28 @@ pdfFileInput.addEventListener('change', (e) => {
     }
 });
 
+function handlePdfSplitReset() {
+    resetUI();
+    pdfFileInput.value = '';
+    originalFile = null;
+    pdfDocument = null;
+    selectedPages.clear();
+    splitResults = [];
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+window.handlePdfSplitReset = handlePdfSplitReset;
+
+if (resetBtn) {
+    resetBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handlePdfSplitReset();
+    });
+}
+
 splitBtn.addEventListener('click', async () => {
     if (!originalFile || !pdfDocument) {
-        alert('Silakan pilih file terlebih dahulu!');
+        if (window.Toast) window.Toast.warning('Silakan pilih file terlebih dahulu!');
+        else alert('Silakan pilih file terlebih dahulu!');
         return;
     }
     
@@ -249,7 +271,8 @@ splitBtn.addEventListener('click', async () => {
         const end = parseInt(endPageInput.value);
         
         if (!start || !end || start < 1 || end > pdfDocument.numPages || start > end) {
-            alert('Rentang halaman tidak valid!');
+            if (window.Toast) window.Toast.warning('Rentang halaman tidak valid!');
+            else alert('Rentang halaman tidak valid!');
             return;
         }
         
@@ -260,7 +283,8 @@ splitBtn.addEventListener('click', async () => {
         pagesToSplit.push(pages);
     } else if (currentMode === 'custom') {
         if (selectedPages.size === 0) {
-            alert('Silakan pilih minimal 1 halaman!');
+            if (window.Toast) window.Toast.warning('Silakan pilih minimal 1 halaman!');
+            else alert('Silakan pilih minimal 1 halaman!');
             return;
         }
         
@@ -303,7 +327,15 @@ splitBtn.addEventListener('click', async () => {
         }
         
         progressContainer.style.display = 'none';
+        modeSelection.style.display = 'none';
+        rangeInput.style.display = 'none';
+        pageSelector.style.display = 'none';
+        splitBtn.style.display = 'none';
         resultInfo.style.display = 'block';
+
+        setTimeout(() => {
+            resultInfo.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 50);
         
         originalNameSpan.textContent = originalFile.name;
         splitCountSpan.textContent = splitResults.length;
@@ -311,9 +343,11 @@ splitBtn.addEventListener('click', async () => {
         splitBtn.disabled = false;
         splitBtn.innerHTML = '<i class="fas fa-cut"></i> Pisahkan PDF';
         
+        if (window.Toast) window.Toast.success('Halaman PDF berhasil dipisahkan.');
     } catch (error) {
         console.error(error);
-        alert('Error saat memisahkan PDF: ' + error.message);
+        if (window.Toast) window.Toast.error('Gagal memisahkan PDF: ' + error.message);
+        else alert('Gagal memisahkan PDF: ' + error.message);
         statusP.textContent = `Error: ${error.message}`;
         progressContainer.style.display = 'none';
         splitBtn.disabled = false;

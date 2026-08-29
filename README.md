@@ -1,169 +1,178 @@
-# PDF & Image Tools Suite - Versi Baru
+# PDF & Image Tools Suite
 
-## 🎨 Fitur-Fitur Baru
-
-### 1. **Navbar Responsif**
-- Navbar fixed di bagian atas dengan efek blur
-- Menu hamburger untuk tampilan mobile
-- Active state untuk halaman saat ini
-- Animasi smooth saat scroll
-- Logo dengan ikon yang menarik
-
-### 2. **Design Modern & Unik**
-- **Tanpa Gradien**: Menggunakan warna solid yang lebih modern
-- **Canvas Background**: Animasi partikel interaktif yang merespon gerakan mouse
-- **Dark Theme**: Background gelap dengan card putih yang kontras
-- **Typography**: Menggunakan font Outfit dan Inter yang modern
-- **Micro-interactions**: Animasi halus di setiap elemen
-
-### 3. **Palet Warna**
-- Primary: #6366f1 (Indigo)
-- Secondary: #ec4899 (Pink)
-- Accent: #14b8a6 (Teal)
-- Success: #22c55e (Green)
-- Background: #0f172a (Dark Blue)
-
-### 4. **Canvas Animation**
-- 80 partikel yang bergerak dinamis
-- Koneksi antar partikel dengan jarak maksimal 150px
-- Interaksi dengan mouse - partikel menjauh saat kursor mendekat
-- Responsif terhadap touch pada mobile
-- Performa optimal dengan requestAnimationFrame
-
-### 5. **Responsif Sempurna**
-- Desktop (>1024px): Grid 2 kolom dengan navbar horizontal
-- Tablet (768px-1024px): Menu hamburger aktif
-- Mobile (<768px): Layout 1 kolom, menu full screen
-- Small Mobile (<480px): Optimasi spacing dan font size
-
-### 6. **Peningkatan UX**
-- Animasi fade-in dan slide-in untuk konten
-- Hover effects yang smooth
-- Loading states yang jelas
-- Preview gambar yang lebih baik
-- Feedback visual yang konsisten
-
-## 📁 Struktur File
-
-```
-├── index.html              # Halaman utama dengan tools grid
-├── pdf-compressor.html     # Tool kompresi PDF
-├── image-compressor.html   # Tool kompresi gambar
-├── image-to-pdf.html       # Tool konversi gambar ke PDF
-├── pdf-to-images.html      # Tool konversi PDF ke gambar
-├── style.css               # Stylesheet utama (BARU)
-├── canvas-animation.js     # Animasi background (BARU)
-├── pdf-compressor.js       # Logic kompresi PDF
-├── image-compressor.js     # Logic kompresi gambar
-├── image-to-pdf.js         # Logic konversi gambar ke PDF
-└── pdf-to-images.js        # Logic konversi PDF ke gambar
-```
-
-## 🚀 Cara Menggunakan
-
-1. Buka `index.html` di browser modern
-2. Pilih tool yang diinginkan
-3. Upload file dengan drag & drop atau click
-4. Atur pengaturan sesuai kebutuhan
-5. Proses dan download hasilnya
-
-## 🎯 Keunggulan Design Baru
-
-### Visual
-- Lebih modern dan profesional
-- Tidak monoton dengan animasi canvas
-- Contrast yang lebih baik untuk readability
-- Ikon dan spacing yang konsisten
-
-### Performance
-- Canvas animation dioptimalkan
-- CSS transitions yang smooth
-- Lazy loading untuk preview
-- Minimal reflow dan repaint
-
-### Accessibility
-- Color contrast yang baik
-- Focus states yang jelas
-- Responsive touch targets
-- Keyboard navigation friendly
-
-### Developer-Friendly
-- Kode yang terorganisir
-- CSS variables untuk konsistensi
-- Comments yang jelas
-- Easy to customize
-
-## 🎨 Customisasi
-
-### Mengubah Warna
-Edit CSS variables di `style.css`:
-```css
-:root {
-    --primary: #6366f1;
-    --secondary: #ec4899;
-    --accent: #14b8a6;
-    /* ... */
-}
-```
-
-### Mengubah Animasi Canvas
-Edit `canvas-animation.js`:
-```javascript
-this.particleCount = 80;        // Jumlah partikel
-this.mouseRadius = 150;         // Radius interaksi mouse
-```
-
-### Mengubah Layout
-Edit breakpoints di `style.css`:
-```css
-@media (max-width: 1024px) { /* Tablet */ }
-@media (max-width: 768px) { /* Mobile */ }
-@media (max-width: 480px) { /* Small Mobile */ }
-```
-
-## 🌟 Fitur Teknis
-
-### Canvas Animation
-- Class-based architecture
-- Event delegation untuk performance
-- Touch support untuk mobile
-- Automatic resize handling
-- RAF-based animation loop
-
-### CSS Architecture
-- Mobile-first approach
-- BEM-like naming convention
-- Utility classes untuk reusability
-- Smooth transitions untuk UX
-
-### JavaScript
-- ES6+ syntax
-- Modular code structure
-- Error handling
-- Progress tracking
-- File validation
-
-## 📱 Browser Support
-
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Opera (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## 🎓 Tips Pengembangan
-
-1. **Testing**: Selalu test di berbagai ukuran layar
-2. **Performance**: Monitor canvas animation di DevTools
-3. **Accessibility**: Test dengan keyboard navigation
-4. **Cross-browser**: Verify di semua browser utama
-5. **Mobile**: Test gesture dan touch interactions
-
-## 📄 Lisensi
-
-Free to use untuk project personal dan komersial.
+Aplikasi web statis modern (Neo-Brutalist design) untuk mengelola dokumen PDF dan file gambar langsung di browser secara gratis, cepat, dan aman tanpa perlu mengunggah file ke server luar.
 
 ---
 
-**Dibuat dengan ❤️ menggunakan HTML, CSS, dan JavaScript murni**
-**Tanpa dependency framework - Pure Vanilla!**
+## 🚀 Cara Running / Menjalankan Proyek
+
+Aplikasi ini menggunakan **Clean Routing** (misalnya `/pdf-compressor`, `/image-to-pdf`), sehingga disarankan dijalankan menggunakan **Web Server lokal** agar navigasi dan eksekusi skrip berjalan sempurna.
+
+### Metode 1: Menggunakan Node.js (`npx serve` atau `npx http-server`) — *Direkomendasikan*
+
+1. Pastikan Anda sudah menginstal Node.js di komputer.
+2. Buka terminal/PowerShell di direktori proyek ini.
+3. Jalankan perintah berikut:
+   ```bash
+   npx serve .
+   ```
+   *atau*
+   ```bash
+   npx http-server -p 3000
+   ```
+4. Buka browser dan akses alamat yang ditampilkan (contoh: `http://localhost:3000`).
+
+---
+
+### Metode 2: Menggunakan Python (Tanpa Install Node.js)
+
+Jika komputer Anda memiliki Python:
+
+```bash
+python -m http.server 8000
+```
+Buka browser lalu akses `http://localhost:8000`.
+
+---
+
+### Metode 3: Live Server (VS Code Extension)
+
+1. Buka folder proyek di **VS Code**.
+2. Install ekstensi **Live Server** (oleh Ritwick Dey).
+3. Klik kanan pada `index.html` -> Pilih **Open with Live Server**.
+
+---
+
+### Metode 4: Netlify CLI (Testing Lokal)
+
+Jika ingin menguji konfigurasi Netlify secara lokal:
+```bash
+npx netlify-cli dev
+```
+
+---
+
+## 🌐 Cara Deploy ke Netlify
+
+Anda dapat mempublikasikan website ini ke **Netlify** secara gratis dengan 3 cara mudah berikut:
+
+### 🌟 Opsi A: Menggunakan Netlify CLI (Paling Cepat & Langsung dari Terminal)
+
+1. Buka terminal/PowerShell di folder proyek ini (`Tools PDF`).
+2. Pastikan Anda sudah login ke akun Netlify:
+   ```bash
+   npx netlify login
+   ```
+   *(Browser akan terbuka untuk konfirmasi otorisasi login).*
+3. Untuk melakukan deploy langsung ke **Production (Live)**:
+   ```bash
+   npx netlify deploy --prod --dir .
+   ```
+4. Jika ditanya:
+   - *Create & configure a new site* -> Pilih **Yes** atau pilih site yang sudah ada.
+   - *Publish directory* -> Ketik `.` (titik) lalu tekan **Enter**.
+5. Selesai! URL website live Anda (misal: `https://pdf-image-tools.netlify.app`) akan langsung diberikan di terminal.
+
+---
+
+### 🚀 Opsi B: Menggunakan GitHub / GitLab (Otomatis / CI-CD)
+
+Jika proyek Anda terhubung ke repository Git (GitHub/GitLab):
+
+1. Unggah kode proyek ini ke repository GitHub Anda (`git push origin main`).
+2. Buka dashboard [Netlify](https://app.netlify.com/) dan login.
+3. Klik tombol **"Add new site"** -> Pilih **"Import an existing project"**.
+4. Pilih penyedia Git Anda (**GitHub**).
+5. Pilih repository proyek Anda.
+6. Pada bagian **Build settings**:
+   - **Build command**: *(kosongkan saja)*
+   - **Publish directory**: `.` *(atau biarkan kosong)*
+7. Klik **"Deploy site"**. Netlify akan otomatis mendeploy dan setiap kali Anda melakukan `git push`, website akan otomatis ter-update!
+
+---
+
+### 📦 Opsi C: Drag & Drop ke Netlify Drop (Tanpa Perintah / Tanpa Git)
+
+1. Buka browser dan kunjungi [Netlify Drop](https://app.netlify.com/drop).
+2. Login ke akun Netlify Anda.
+3. Seret (*drag & drop*) seluruh folder proyek `Tools PDF` langsung ke area upload di halaman browser tersebut.
+4. Tunggu beberapa detik hingga proses selesai dan website Anda langsung siap diakses!
+
+---
+
+## 🛠️ Fitur Utama Tools (12-in-1 Suite)
+
+1. **⚡ Kompres PDF** — Mengurangi ukuran file PDF tanpa menurunkan kualitas visual secara drastis.
+2. **📑 Gabung PDF** — Menggabungkan beberapa file PDF menjadi satu file utuh dengan fitur drag & drop urutan.
+3. **✂️ Pisah PDF** — Memisahkan halaman PDF berdasarkan rentang atau pilihan halaman individual (output berupa ZIP).
+4. **🔄 Putar / Rotasi PDF** — Memperbaiki orientasi halaman PDF yang miring/terbalik (90°, 180°, 270°) per halaman atau serentak.
+5. **📷 PDF ke Gambar** — Ekstrak halaman PDF menjadi gambar JPG/PNG resolusi tinggi.
+6. **📄 Gambar ke PDF** — Konversi banyak gambar menjadi satu dokumen PDF dengan pilihan ukuran halaman (A4, Letter, Fit).
+7. **🖼️ Kompres Gambar** — Kompresi gambar JPG dan PNG dengan pengaturan slider kualitas interaktif.
+8. **📐 Ubah Ukuran Gambar** — Ubah dimensi piksel atau rasio aspek foto dengan preset instan (Pas Foto, Sosmed, Full HD).
+9. **🔄 Konversi Format Gambar** — Konversi instan antar format `WEBP ↔ PNG ↔ JPG ↔ SVG`.
+10. **📄 PDF ke Teks & MD** — Ekstrak isi tulisan dari file PDF per halaman ke file `.txt` atau Markdown (`.md`).
+11. **📜 PDF ke Gambar Panjang** — Menggabungkan semua halaman PDF menjadi 1 file gambar vertikal panjang (Infografis/Katalog).
+12. **🌐 HTML / Rich Text ke PDF** — Meng-export catatan Rich Text atau kode HTML menjadi dokumen PDF A4.
+
+---
+
+## 📁 Struktur Proyek (Terorganisir)
+
+```
+Tools PDF/
+├── index.html              # Halaman utama (Tools Grid 12-in-1 dengan Live Search)
+├── README.md               # Dokumentasi proyek
+├── netlify.toml            # Konfigurasi deployment & redirects Netlify
+├── manifest.json           # PWA Web App Manifest
+├── icon.svg                # PWA Vector Icon
+├── sw.js                   # Service Worker Offline Pre-caching (v32)
+├── css/
+│   └── style.css           # Styling utama & design system
+├── js/
+│   ├── shared/             # Skrip bersama/shared modules
+│   │   ├── canvas-animation.js # Background animasi partikel
+│   │   ├── file-validator.js   # Validasi file & magic bytes
+│   │   ├── navbar.js           # Injection & logika navbar
+│   │   ├── pwa.js              # Registrasi SW & Install prompt
+│   │   ├── security.js         # Security & Global Clipboard Paste (Ctrl+V)
+│   │   └── toast.js            # Toast Notification Neo-Brutalist
+│   └── tools/              # Logika spesifik per tool (12 Tools)
+│       ├── html-to-pdf.js
+│       ├── image-compressor.js
+│       ├── image-format-converter.js
+│       ├── image-resizer.js
+│       ├── image-to-pdf.js
+│       ├── pdf-compressor.js
+│       ├── pdf-merge.js
+│       ├── pdf-rotate.js
+│       ├── pdf-split.js
+│       ├── pdf-to-images.js
+│       ├── pdf-to-long-image.js
+│       └── pdf-to-text.js
+├── html-to-pdf/
+├── image-compressor/
+├── image-format-converter/
+├── image-resizer/
+├── image-to-pdf/
+├── pdf-compressor/
+├── pdf-merge/
+├── pdf-rotate/
+├── pdf-split/
+├── pdf-to-images/
+├── pdf-to-long-image/
+└── pdf-to-text/
+```
+
+---
+
+## 🔐 Keamanan & Privasi
+
+- **Client-Side Processing**: Seluruh pemrosesan PDF dan gambar dilakukan 100% di browser pengguna (menggunakan `pdf-lib`, `pdf.js`, `mammoth.js`, `SheetJS`, dan Canvas API). File Anda **tidak pernah diunggah ke server mana pun**.
+- **Security Protections**: Dilengkapi dengan `security.js` dan `file-validator.js` untuk proteksi input, MIME type check, magic bytes check, serta proteksi XSS/Clickjacking.
+
+---
+
+## 📄 Lisensi
+
+Bebas digunakan untuk penggunaan personal maupun komersial.

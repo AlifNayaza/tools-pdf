@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' data: blob:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <title>UBAH UKURAN GAMBAR 📐</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body class="tool-page">
+    <canvas id="backgroundCanvas"></canvas>
+
+    <div class="card">
+        <header class="card-header">
+            <a href="/" class="back-button"><i class="fas fa-arrow-left"></i> KEMBALI</a>
+            <h1>UBAH UKURAN GAMBAR 📐</h1>
+            <p>Ubah dimensi piksel atau persentase ukuran foto dengan cepat & presisi.</p>
+        </header>
+        <main class="card-body">
+            <div class="step" id="step1">
+                <label for="imageFile" class="file-label" id="dropArea">
+                    <i class="fas fa-expand-arrows-alt"></i>
+                    <span>PILIH GAMBAR</span>
+                    <small>JPG, PNG, WEBP • MAX 50MB • BISA DRAG & DROP ATAU PASTE (CTRL+V)</small>
+                </label>
+                <input type="file" id="imageFile" accept="image/jpeg,image/png,image/webp" hidden>
+            </div>
+
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <p><strong>NAMA FILE:</strong> <span id="fileName"></span></p>
+                <p><strong>UKURAN FILE:</strong> <span id="fileSize"></span></p>
+                <p><strong>DIMENSI ASLI:</strong> <span id="originalDimensions"></span></p>
+            </div>
+
+            <div class="preview-area" id="previewArea" style="display: none;">
+                <img id="imagePreview" alt="Pratinjau Gambar">
+            </div>
+
+            <div class="step" id="step2" style="display: none;">
+                <div class="presets-group">
+                    <button type="button" class="preset-chip" data-preset="pas-foto-2x3">Pas Foto 2x3 (236x354)</button>
+                    <button type="button" class="preset-chip" data-preset="pas-foto-3x4">Pas Foto 3x4 (354x472)</button>
+                    <button type="button" class="preset-chip" data-preset="pas-foto-4x6">Pas Foto 4x6 (472x709)</button>
+                    <button type="button" class="preset-chip" data-preset="ig-square">Instagram 1:1 (1080x1080)</button>
+                    <button type="button" class="preset-chip" data-preset="full-hd">Full HD (1920x1080)</button>
+                </div>
+
+                <div class="resizer-grid">
+                    <div class="resizer-input-group">
+                        <label for="resizeWidth">LEBAR (PIKSEL / PX):</label>
+                        <input type="number" id="resizeWidth" min="1" max="10000">
+                    </div>
+                    <div class="resizer-input-group">
+                        <label for="resizeHeight">TINGGI (PIKSEL / PX):</label>
+                        <input type="number" id="resizeHeight" min="1" max="10000">
+                    </div>
+                </div>
+
+                <button type="button" class="ratio-lock-btn active" id="ratioLockBtn">
+                    <i class="fas fa-lock"></i> KUNCI RASIO ASPEK (ASPECT RATIO)
+                </button>
+
+                <div class="form-group" style="margin-top: 15px;">
+                    <label for="outputFormat">FORMAT OUTPUT:</label>
+                    <select id="outputFormat">
+                        <option value="original">Sama dengan File Asli</option>
+                        <option value="image/jpeg">JPG / JPEG</option>
+                        <option value="image/png">PNG</option>
+                        <option value="image/webp">WEBP</option>
+                    </select>
+                </div>
+
+                <button id="resizeBtn" style="margin-top: 15px;">
+                    <i class="fas fa-expand-arrows-alt"></i> UBAH UKURAN GAMBAR
+                </button>
+            </div>
+
+            <div class="progress-container" id="progressContainer" style="display: none;">
+                <p id="status">MEMPROSES GAMBAR...</p>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <div class="result-info" id="resultInfo" style="display: none;">
+                <h2>GAMBAR BERHASIL DIUBAH</h2>
+                <div class="stats">
+                    <p>DIMENSI ASLI: <strong id="resOrigDim">—</strong></p>
+                    <p>DIMENSI BARU: <strong id="resNewDim">—</strong></p>
+                    <p>UKURAN BARU: <strong id="resNewSize">—</strong></p>
+                </div>
+                <div class="preview-area" style="margin-bottom: 20px;">
+                    <img id="resultImage" alt="Hasil Resize">
+                </div>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <a id="downloadLink" class="download-link" style="flex: 1; min-width: 200px;"><i class="fas fa-download"></i> UNDUH GAMBAR</a>
+                    <button type="button" id="copyImageBtn" class="download-link copy-btn-action" style="flex: 1; min-width: 200px; cursor: pointer;">
+                        <i class="fas fa-copy"></i> SALIN GAMBAR
+                    </button>
+                </div>
+                <button type="button" id="resetBtn" class="reset-btn" onclick="window.handleImageResizerReset && window.handleImageResizerReset()"><i class="fas fa-redo"></i> UBAH GAMBAR LAIN</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../js/shared/security.js"></script>
+    <script src="../js/shared/toast.js"></script>
+    <script src="../js/shared/pwa.js"></script>
+    <script src="../js/shared/canvas-animation.js"></script>
+    <script src="../js/shared/navbar.js"></script>
+    <script src="../js/tools/image-resizer.js"></script>
+</body>
+</html>
