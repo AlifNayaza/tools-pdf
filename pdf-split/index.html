@@ -41,6 +41,14 @@
     ">
     <title>PISAH PDF ✂️</title>
     <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f0ff">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap"></noscript>
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/webfonts/fa-solid-900.woff2">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
@@ -151,14 +159,15 @@
     </div>
     
     <!-- Load scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
-    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    <script src="../js/shared/security.js"></script>
-    <script src="../js/shared/toast.js"></script>
-    <script src="../js/shared/pwa.js"></script>
-    <script src="../js/shared/canvas-animation.js"></script>
-    <script src="../js/shared/navbar.js"></script>
-    <script src="../js/tools/pdf-split.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script defer src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script defer src="../js/shared/security.js"></script>
+    <script defer src="../js/shared/toast.js"></script>
+    <script defer src="../js/shared/pwa.js"></script>
+    <script defer src="../js/shared/canvas-animation.js"></script>
+    <script defer src="../js/shared/navbar.js"></script>
+    <script defer src="../js/shared/tool-ui.js"></script>
+    <script defer src="../js/tools/pdf-split.js"></script>
 </body>
 </html>

@@ -4,13 +4,22 @@ class Y2KCanvasAnimation {
         this.canvas = document.getElementById('backgroundCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.shapes = [];
-        this.shapeCount = 25;
+        // Layar kecil / perangkat sederhana: bentuk lebih sedikit supaya hemat baterai
+        const small = window.innerWidth < 700 || (navigator.hardwareConcurrency || 4) <= 2;
+        this.shapeCount = small ? 10 : 22;
+        this.maxShapes = small ? 18 : 36;
         this.colors = ['#00f0ff', '#ff006e', '#ffea00', '#8fff00', '#ff5c00'];
         this.mousePosition = { x: null, y: null };
-        
+        this.reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+        this.frameInterval = 1000 / 30;      // 30 fps cukup untuk latar dekoratif
+        this.lastFrame = 0;
+        this.dark = document.documentElement.getAttribute('data-theme') === 'dark';
+        this.gridCanvas = null;
+
         this.init();
-        this.animate();
         this.addEventListeners();
+        if (this.reduceMotion) this.renderOnce();
+        else requestAnimationFrame(t => this.animate(t));
     }
 
     init() {
@@ -21,6 +30,23 @@ class Y2KCanvasAnimation {
     resize() {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
+        this.buildGrid();
+    }
+
+    // Grid statis digambar sekali ke kanvas cadangan, lalu cukup disalin tiap frame
+    buildGrid() {
+        const g = document.createElement('canvas');
+        g.width = this.canvas.width;
+        g.height = this.canvas.height;
+        const c = g.getContext('2d');
+        const gridSize = 100;
+        c.strokeStyle = this.dark ? '#ffffff' : '#000000';
+        c.lineWidth = 1;
+        c.beginPath();
+        for (let x = 0; x < g.width; x += gridSize) { c.moveTo(x + 0.5, 0); c.lineTo(x + 0.5, g.height); }
+        for (let y = 0; y < g.height; y += gridSize) { c.moveTo(0, y + 0.5); c.lineTo(g.width, y + 0.5); }
+        c.stroke();
+        this.gridCanvas = g;
     }
 
     createShapes() {
@@ -57,7 +83,7 @@ class Y2KCanvasAnimation {
         this.ctx.fillRect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
         
         // Stroke
-        this.ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#000000';
+        this.ctx.strokeStyle = this.dark ? '#ffffff' : '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = shape.opacity;
         this.ctx.strokeRect(-shape.size / 2, -shape.size / 2, shape.size, shape.size);
@@ -77,7 +103,7 @@ class Y2KCanvasAnimation {
         this.ctx.fill();
         
         // Stroke
-        this.ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#000000';
+        this.ctx.strokeStyle = this.dark ? '#ffffff' : '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = shape.opacity;
         this.ctx.stroke();
@@ -104,7 +130,7 @@ class Y2KCanvasAnimation {
         this.ctx.fill();
         
         // Stroke
-        this.ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#000000';
+        this.ctx.strokeStyle = this.dark ? '#ffffff' : '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = shape.opacity;
         this.ctx.stroke();
@@ -168,7 +194,7 @@ class Y2KCanvasAnimation {
         this.ctx.fill();
         
         // Stroke
-        this.ctx.strokeStyle = document.documentElement.getAttribute('data-theme') === 'dark' ? '#ffffff' : '#000000';
+        this.ctx.strokeStyle = this.dark ? '#ffffff' : '#000000';
         this.ctx.lineWidth = 3;
         this.ctx.globalAlpha = shape.opacity;
         this.ctx.stroke();
@@ -243,55 +269,53 @@ class Y2KCanvasAnimation {
     }
 
     drawGrid() {
-        const gridSize = 100;
-        this.ctx.strokeStyle = '#000000';
-        this.ctx.lineWidth = 1;
+        if (!this.gridCanvas) return;
         this.ctx.globalAlpha = 0.03;
-        
-        // Vertical lines
-        for (let x = 0; x < this.canvas.width; x += gridSize) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(x, 0);
-            this.ctx.lineTo(x, this.canvas.height);
-            this.ctx.stroke();
-        }
-        
-        // Horizontal lines
-        for (let y = 0; y < this.canvas.height; y += gridSize) {
-            this.ctx.beginPath();
-            this.ctx.moveTo(0, y);
-            this.ctx.lineTo(this.canvas.width, y);
-            this.ctx.stroke();
-        }
-        
+        this.ctx.drawImage(this.gridCanvas, 0, 0);
         this.ctx.globalAlpha = 1;
     }
 
-    animate() {
+    renderOnce() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Draw grid
         this.drawGrid();
+        this.shapes.forEach(shape => this.drawShape(shape));
+    }
 
-        // Update and draw shapes
+    animate(now) {
+        this.rafId = requestAnimationFrame(t => this.animate(t));
+        if (document.hidden) return;
+        if (now - this.lastFrame < this.frameInterval) return;
+        this.lastFrame = now;
+
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.drawGrid();
         this.shapes.forEach(shape => {
             this.updateShape(shape);
             this.drawShape(shape);
         });
-
-        requestAnimationFrame(() => this.animate());
     }
 
     addEventListeners() {
+        let resizeTimer;
         window.addEventListener('resize', () => {
-            this.resize();
-            this.createShapes();
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                this.resize();
+                this.createShapes();
+                if (this.reduceMotion) this.renderOnce();
+            }, 150);
+        });
+
+        window.addEventListener('theme:changed', (e) => {
+            this.dark = e.detail && e.detail.theme === 'dark';
+            this.buildGrid();
+            if (this.reduceMotion) this.renderOnce();
         });
 
         window.addEventListener('mousemove', (e) => {
             this.mousePosition.x = e.clientX;
             this.mousePosition.y = e.clientY;
-        });
+        }, { passive: true });
 
         window.addEventListener('mouseleave', () => {
             this.mousePosition.x = null;
@@ -304,7 +328,7 @@ class Y2KCanvasAnimation {
                 this.mousePosition.x = e.touches[0].clientX;
                 this.mousePosition.y = e.touches[0].clientY;
             }
-        });
+        }, { passive: true });
 
         window.addEventListener('touchend', () => {
             this.mousePosition.x = null;
@@ -313,7 +337,7 @@ class Y2KCanvasAnimation {
 
         // Click to add shape
         window.addEventListener('click', (e) => {
-            if (e.target.id === 'backgroundCanvas') return;
+            if (e.target.id === 'backgroundCanvas' || this.reduceMotion) return;
             
             const shapeTypes = ['square', 'circle', 'triangle', 'cross', 'star'];
             const type = shapeTypes[Math.floor(Math.random() * shapeTypes.length)];
@@ -333,7 +357,7 @@ class Y2KCanvasAnimation {
             });
             
             // Remove oldest shape if too many
-            if (this.shapes.length > 40) {
+            if (this.shapes.length > this.maxShapes) {
                 this.shapes.shift();
             }
         });

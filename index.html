@@ -31,17 +31,25 @@
     ">
     <title>PDF & Image Tools - Neo-Brutalist Suite</title>
     <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f0ff">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap"></noscript>
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/webfonts/fa-solid-900.woff2">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
     <canvas id="backgroundCanvas"></canvas>
 
-    <!-- Main Content -->
-    <div class="main-container">
+    <!-- Konten utama -->
+    <main class="main-container" id="main-content" tabindex="-1">
         <header class="main-header">
             <div class="main-header-badge">
-                <i class="fas fa-shield-alt"></i> PRIVASI TERJAGA • 100% DI BROWSER
+                <i class="fas fa-shield-alt" aria-hidden="true"></i> PRIVASI TERJAGA • 100% DI BROWSER
             </div>
             <h1>
                 <span class="word">PDF</span>
@@ -50,231 +58,251 @@
                 <span class="word">TOOLS</span>
             </h1>
             <p>
-                Solusi lengkap untuk mengolah dokumen PDF dan gambar secara praktis, 
-                cepat, dan aman tanpa perlu mengunggah file ke server luar.
+                Kompres, gabung, pisah, dan konversi PDF atau gambar langsung di browser.
+                Gratis, cepat, dan file Anda tidak pernah diunggah ke server.
             </p>
+            <ol class="how-steps" aria-label="Cara pakai">
+                <li><span>1</span> Pilih alat</li>
+                <li><span>2</span> Pilih file</li>
+                <li><span>3</span> Unduh hasilnya</li>
+            </ol>
         </header>
 
-        <!-- Search Bar -->
-        <div class="search-wrapper">
+        <!-- Pencarian & kategori -->
+        <form class="search-wrapper" role="search" id="searchForm" aria-label="Cari alat">
+            <label for="toolSearchInput" class="sr-only">Cari alat berdasarkan nama atau kebutuhan</label>
             <div class="search-box">
-                <input type="text" id="toolSearchInput" placeholder="Cari alat... (contoh: kompres, gabung, rotasi, ukuran)" autocomplete="off">
-                <i class="fas fa-search search-icon"></i>
+                <i class="fas fa-search search-icon" aria-hidden="true"></i>
+                <input type="search" id="toolSearchInput" placeholder="Cari alat, mis. kompres" autocomplete="off" enterkeyhint="search" aria-controls="toolsGrid">
             </div>
+        </form>
+
+        <fieldset class="category-chips" id="categoryChips">
+            <legend class="sr-only">Filter kategori alat</legend>
+            <label class="chip"><input type="radio" name="cat" value="all" checked><span>Semua <b class="chip-count" data-count="all">13</b></span></label>
+            <label class="chip"><input type="radio" name="cat" value="edit"><span><i class="fas fa-file-pdf" aria-hidden="true"></i> Edit PDF <b class="chip-count" data-count="edit"></b></span></label>
+            <label class="chip"><input type="radio" name="cat" value="konversi"><span><i class="fas fa-exchange-alt" aria-hidden="true"></i> Konversi <b class="chip-count" data-count="konversi"></b></span></label>
+            <label class="chip"><input type="radio" name="cat" value="gambar"><span><i class="fas fa-image" aria-hidden="true"></i> Gambar <b class="chip-count" data-count="gambar"></b></span></label>
+        </fieldset>
+
+        <h2 class="sr-only" id="tools-heading">Daftar alat</h2>
+        <p class="result-status" id="resultStatus" role="status" aria-live="polite">Menampilkan 13 dari 13 alat</p>
+
+        <ul class="tools-grid" id="toolsGrid" aria-labelledby="tools-heading">
+            <li class="tool-item" data-cat="edit" data-keywords="kompres pdf perkecil kecilkan dokumen kurangi ukuran compress">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-compress"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Edit PDF</p>
+                        <h3><a class="tool-link" href="/pdf-compressor" aria-describedby="desc-pdf-compressor">Kompres PDF</a></h3>
+                        <p class="tool-desc" id="desc-pdf-compressor">Perkecil ukuran dokumen PDF tanpa mengurangi keterbacaan teks dan gambar.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="edit" data-keywords="gabung pdf satukan gabungkan satukan dokumen merge combine">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-object-group"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Edit PDF</p>
+                        <h3><a class="tool-link" href="/pdf-merge" aria-describedby="desc-pdf-merge">Gabung PDF</a></h3>
+                        <p class="tool-desc" id="desc-pdf-merge">Satukan beberapa file PDF menjadi satu dokumen terurut dengan mudah.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="edit" data-keywords="pisah pdf pisahkan ekstrak halaman potong dokumen split extract">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-cut"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Edit PDF</p>
+                        <h3><a class="tool-link" href="/pdf-split" aria-describedby="desc-pdf-split">Pisah PDF</a></h3>
+                        <p class="tool-desc" id="desc-pdf-split">Ambil halaman tertentu atau pisahkan seluruh halaman PDF menjadi dokumen mandiri.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="edit" data-keywords="putar pdf rotasi halaman putar terbalik miring rotate rotation">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-redo"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Edit PDF</p>
+                        <h3><a class="tool-link" href="/pdf-rotate" aria-describedby="desc-pdf-rotate">Putar PDF</a></h3>
+                        <p class="tool-desc" id="desc-pdf-rotate">Putar halaman PDF yang terbalik atau miring (90°, 180°, 270°) secara permanen.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="konversi" data-keywords="pdf ke word docx dokumen ubah konversi edit doc microsoft word">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-file-word"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Konversi</p>
+                        <h3><a class="tool-link" href="/pdf-to-word" aria-describedby="desc-pdf-to-word">PDF ke Word</a></h3>
+                        <p class="tool-desc" id="desc-pdf-to-word">Ubah PDF menjadi dokumen Word (.docx) yang rapi dan bisa diedit, lengkap dengan judul, daftar, tabel, dan gambar.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="konversi" data-keywords="pdf ke gambar konversi ekstrak jpg png image render">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-images"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Konversi</p>
+                        <h3><a class="tool-link" href="/pdf-to-images" aria-describedby="desc-pdf-to-images">PDF ke Gambar</a></h3>
+                        <p class="tool-desc" id="desc-pdf-to-images">Ubah setiap lembar dokumen PDF menjadi file gambar format JPG atau PNG.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="konversi" data-keywords="pdf ke gambar panjang infografis gabung vertikal long image">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-scroll"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Konversi</p>
+                        <h3><a class="tool-link" href="/pdf-to-long-image" aria-describedby="desc-pdf-to-long-image">PDF ke Gambar Panjang</a></h3>
+                        <p class="tool-desc" id="desc-pdf-to-long-image">Satukan semua halaman PDF secara vertikal menjadi satu gambar panjang utuh.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="konversi" data-keywords="pdf ke teks ekstrak tulisan markdown txt copy extract text">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-file-alt"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Konversi</p>
+                        <h3><a class="tool-link" href="/pdf-to-text" aria-describedby="desc-pdf-to-text">PDF ke Teks</a></h3>
+                        <p class="tool-desc" id="desc-pdf-to-text">Ekstrak seluruh isi teks dari dokumen PDF ke format TXT atau Markdown.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="konversi" data-keywords="gambar ke pdf foto buat dokumen satukan foto image to pdf">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-file-image"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Konversi</p>
+                        <h3><a class="tool-link" href="/image-to-pdf" aria-describedby="desc-image-to-pdf">Gambar ke PDF</a></h3>
+                        <p class="tool-desc" id="desc-image-to-pdf">Gabungkan kumpulan foto atau gambar menjadi satu dokumen PDF rapi.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="konversi" data-keywords="html ke pdf cetak rich text kode web cetak dokumen">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-code"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Konversi</p>
+                        <h3><a class="tool-link" href="/html-to-pdf" aria-describedby="desc-html-to-pdf">HTML ke PDF</a></h3>
+                        <p class="tool-desc" id="desc-html-to-pdf">Cetak teks berformat atau kode HTML langsung menjadi dokumen PDF.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="gambar" data-keywords="kompres gambar perkecil foto jpg png compress image kecilkan">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-image"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Gambar</p>
+                        <h3><a class="tool-link" href="/image-compressor" aria-describedby="desc-image-compressor">Kompres Gambar</a></h3>
+                        <p class="tool-desc" id="desc-image-compressor">Kecilkan ukuran file foto JPG dan PNG dengan pengaturan kualitas fleksibel.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="gambar" data-keywords="ubah ukuran gambar resize foto resolusi piksel pas foto dimensi">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-expand-arrows-alt"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Gambar</p>
+                        <h3><a class="tool-link" href="/image-resizer" aria-describedby="desc-image-resizer">Ubah Ukuran Gambar</a></h3>
+                        <p class="tool-desc" id="desc-image-resizer">Ubah resolusi dan dimensi piksel foto dengan preset instan (Pas Foto, Sosmed, Web).</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+            <li class="tool-item" data-cat="konversi gambar" data-keywords="konversi gambar format ubah png jpg webp svg convert">
+                <article class="tool-card">
+                    <div class="tool-icon" aria-hidden="true"><i class="fas fa-exchange-alt"></i></div>
+                    <div class="tool-content">
+                        <p class="tool-cat">Konversi gambar</p>
+                        <h3><a class="tool-link" href="/image-format-converter" aria-describedby="desc-image-format-converter">Konversi Gambar</a></h3>
+                        <p class="tool-desc" id="desc-image-format-converter">Ubah format gambar antar PNG, JPG, WEBP, dan SVG secara cepat.</p>
+                    </div>
+                    <span class="tool-arrow" aria-hidden="true"><span class="tool-arrow-text">Buka alat</span> <i class="fas fa-arrow-right"></i></span>
+                </article>
+            </li>
+        </ul>
+
+        <div class="no-tools-found" id="noToolsFound">
+            <i class="fas fa-search-minus" aria-hidden="true"></i>
+            <h3>Alat tidak ditemukan</h3>
+            <p>Coba kata kunci lain seperti <em>kompres, gabung, putar, gambar,</em> atau pilih kategori <em>Semua</em>.</p>
         </div>
+    </main>
 
-        <div class="tools-grid" id="toolsGrid">
-            <a href="/pdf-compressor" class="tool-card" data-keywords="kompres pdf perkecil kecilkan dokumen kurangi ukuran compress">
-                <div class="tool-icon">
-                    <i class="fas fa-compress"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>KOMPRES PDF</h3>
-                    <p>Perkecil ukuran dokumen PDF tanpa mengurangi keterbacaan teks dan gambar.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/pdf-merge" class="tool-card" data-keywords="gabung pdf satukan gabungkan satukan dokumen merge combine">
-                <div class="tool-icon">
-                    <i class="fas fa-object-group"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>GABUNG PDF</h3>
-                    <p>Satukan beberapa file PDF menjadi satu dokumen terurut dengan mudah.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/pdf-split" class="tool-card" data-keywords="pisah pdf pisahkan ekstrak halaman potong dokumen split extract">
-                <div class="tool-icon">
-                    <i class="fas fa-cut"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>PISAH PDF</h3>
-                    <p>Ambil halaman tertentu atau pisahkan seluruh halaman PDF menjadi dokumen mandiri.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/pdf-rotate" class="tool-card" data-keywords="putar pdf rotasi halaman putar terbalik miring rotate rotation">
-                <div class="tool-icon">
-                    <i class="fas fa-redo"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>PUTAR PDF</h3>
-                    <p>Putar halaman PDF yang terbalik atau miring (90°, 180°, 270°) secara permanen.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/pdf-to-images" class="tool-card" data-keywords="pdf ke gambar konversi ekstrak jpg png image render">
-                <div class="tool-icon">
-                    <i class="fas fa-images"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>PDF KE GAMBAR</h3>
-                    <p>Ubah setiap lembar dokumen PDF menjadi file gambar format JPG atau PNG.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/image-to-pdf" class="tool-card" data-keywords="gambar ke pdf foto buat dokumen satukan foto image to pdf">
-                <div class="tool-icon">
-                    <i class="fas fa-file-image"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>GAMBAR KE PDF</h3>
-                    <p>Gabungkan kumpulan foto atau gambar menjadi satu dokumen PDF rapi.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/image-compressor" class="tool-card" data-keywords="kompres gambar perkecil foto jpg png compress image kecilkan">
-                <div class="tool-icon">
-                    <i class="fas fa-image"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>KOMPRES GAMBAR</h3>
-                    <p>Kecilkan ukuran file foto JPG dan PNG dengan pengaturan kualitas fleksibel.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/image-resizer" class="tool-card" data-keywords="ubah ukuran gambar resize foto resolusi piksel pas foto dimensi">
-                <div class="tool-icon">
-                    <i class="fas fa-expand-arrows-alt"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>UBAH UKURAN GAMBAR</h3>
-                    <p>Ubah resolusi dan dimensi piksel foto dengan preset instan (Pas Foto, Sosmed, Web).</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/image-format-converter" class="tool-card" data-keywords="konversi gambar format ubah png jpg webp svg convert">
-                <div class="tool-icon">
-                    <i class="fas fa-exchange-alt"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>KONVERSI GAMBAR</h3>
-                    <p>Ubah format gambar antar PNG, JPG, WEBP, dan SVG secara cepat.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/pdf-to-text" class="tool-card" data-keywords="pdf ke teks ekstrak tulisan markdown txt copy extract text">
-                <div class="tool-icon">
-                    <i class="fas fa-file-alt"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>PDF KE TEKS</h3>
-                    <p>Ekstrak seluruh isi teks dari dokumen PDF ke format TXT atau Markdown.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/pdf-to-long-image" class="tool-card" data-keywords="pdf ke gambar panjang infografis gabung vertikal long image">
-                <div class="tool-icon">
-                    <i class="fas fa-scroll"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>PDF KE GAMBAR PANJANG</h3>
-                    <p>Satukan semua halaman PDF secara vertikal menjadi satu gambar panjang utuh.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <a href="/html-to-pdf" class="tool-card" data-keywords="html ke pdf cetak rich text kode web cetak dokumen">
-                <div class="tool-icon">
-                    <i class="fas fa-code"></i>
-                </div>
-                <div class="tool-content">
-                    <h3>HTML KE PDF</h3>
-                    <p>Cetak teks berformat atau kode HTML langsung menjadi dokumen PDF.</p>
-                </div>
-                <div class="tool-arrow">
-                    <span>BUKA ALAT</span>
-                    <i class="fas fa-arrow-right"></i>
-                </div>
-            </a>
-
-            <div class="no-tools-found" id="noToolsFound">
-                <i class="fas fa-search-minus"></i>
-                <h3>ALAT TIDAK DITEMUKAN</h3>
-                <p>Coba gunakan kata kunci lain seperti <em>kompres, gabung, rotasi, gambar,</em> atau <em>pdf</em>.</p>
-            </div>
-        </div>
-    </div>
+    <footer class="site-footer">
+        <p><i class="fas fa-lock"></i> Semua proses berjalan di perangkat Anda. File tidak diunggah dan tidak disimpan.</p>
+    </footer>
 
     <!-- Load scripts -->
-    <script src="js/shared/security.js"></script>
-    <script src="js/shared/toast.js"></script>
-    <script src="js/shared/pwa.js"></script>
-    <script src="js/shared/canvas-animation.js"></script>
-    <script src="js/shared/navbar.js"></script>
+    <script defer src="js/shared/security.js"></script>
+    <script defer src="js/shared/toast.js"></script>
+    <script defer src="js/shared/pwa.js"></script>
+    <script defer src="js/shared/canvas-animation.js"></script>
+    <script defer src="js/shared/navbar.js"></script>
     <script>
-        // Live Search Filter
+        // Filter: pencarian + kategori
         const searchInput = document.getElementById('toolSearchInput');
-        const toolCards = document.querySelectorAll('.tool-card');
+        const searchForm = document.getElementById('searchForm');
+        const toolItems = Array.from(document.querySelectorAll('.tool-item'));
         const noToolsFound = document.getElementById('noToolsFound');
+        const resultStatus = document.getElementById('resultStatus');
+        const radios = document.querySelectorAll('#categoryChips input[name="cat"]');
+        let activeFilter = 'all';
 
-        if (searchInput) {
-            searchInput.addEventListener('input', (e) => {
-                const query = e.target.value.toLowerCase().trim();
-                let matchCount = 0;
+        function applyFilter() {
+            const query = (searchInput ? searchInput.value : '').toLowerCase().trim();
+            let matchCount = 0;
 
-                toolCards.forEach(card => {
-                    const title = card.querySelector('h3').textContent.toLowerCase();
-                    const desc = card.querySelector('p').textContent.toLowerCase();
-                    const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+            toolItems.forEach(item => {
+                const title = item.querySelector('h3').textContent.toLowerCase();
+                const desc = item.querySelector('.tool-desc').textContent.toLowerCase();
+                const keywords = (item.getAttribute('data-keywords') || '').toLowerCase();
+                const cats = (item.getAttribute('data-cat') || '').split(' ');
 
-                    if (!query || title.includes(query) || desc.includes(query) || keywords.includes(query)) {
-                        card.style.display = 'flex';
-                        matchCount++;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
+                const okCat = activeFilter === 'all' || cats.includes(activeFilter);
+                const okText = !query || title.includes(query) || desc.includes(query) || keywords.includes(query);
+                const show = okCat && okText;
 
-                if (noToolsFound) {
-                    noToolsFound.style.display = (matchCount === 0 && query) ? 'block' : 'none';
-                }
+                item.hidden = !show;
+                if (show) matchCount++;
             });
+
+            if (noToolsFound) noToolsFound.style.display = matchCount === 0 ? 'block' : 'none';
+            if (resultStatus) {
+                resultStatus.textContent = matchCount === 0
+                    ? 'Tidak ada alat yang cocok'
+                    : `Menampilkan ${matchCount} dari ${toolItems.length} alat`;
+            }
         }
+
+        // Jumlah alat per kategori
+        document.querySelectorAll('.chip-count').forEach(el => {
+            const f = el.getAttribute('data-count');
+            if (f === 'all') return;
+            el.textContent = toolItems.filter(c => (c.getAttribute('data-cat') || '').split(' ').includes(f)).length;
+        });
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', () => {
+                activeFilter = radio.value;
+                applyFilter();
+            });
+        });
+
+        if (searchInput) searchInput.addEventListener('input', applyFilter);
+        if (searchForm) searchForm.addEventListener('submit', (e) => e.preventDefault());
     </script>
 </body>
 </html>

@@ -100,9 +100,9 @@ Jika proyek Anda terhubung ke repository Git (GitHub/GitLab):
 
 ---
 
-## 🛠️ Fitur Utama Tools (12-in-1 Suite)
+## 🛠️ Fitur Utama Tools (13-in-1 Suite)
 
-1. **⚡ Kompres PDF** — Mengurangi ukuran file PDF tanpa menurunkan kualitas visual secara drastis.
+1. **⚡ Kompres PDF** — Mengecilkan ukuran PDF dengan mengoptimalkan gambar di dalamnya (3 tingkat: Ringan, Seimbang, Maksimal). Teks dan vektor tidak di-rasterisasi.
 2. **📑 Gabung PDF** — Menggabungkan beberapa file PDF menjadi satu file utuh dengan fitur drag & drop urutan.
 3. **✂️ Pisah PDF** — Memisahkan halaman PDF berdasarkan rentang atau pilihan halaman individual (output berupa ZIP).
 4. **🔄 Putar / Rotasi PDF** — Memperbaiki orientasi halaman PDF yang miring/terbalik (90°, 180°, 270°) per halaman atau serentak.
@@ -114,6 +114,7 @@ Jika proyek Anda terhubung ke repository Git (GitHub/GitLab):
 10. **📄 PDF ke Teks & MD** — Ekstrak isi tulisan dari file PDF per halaman ke file `.txt` atau Markdown (`.md`).
 11. **📜 PDF ke Gambar Panjang** — Menggabungkan semua halaman PDF menjadi 1 file gambar vertikal panjang (Infografis/Katalog).
 12. **🌐 HTML / Rich Text ke PDF** — Meng-export catatan Rich Text atau kode HTML menjadi dokumen PDF A4.
+13. **📝 PDF ke Word** — Mengubah PDF menjadi `.docx` yang rapi dan bisa diedit: judul, paragraf, daftar bernomor/berbutir, tabel, gambar, tautan, garis pemisah, dan ukuran halaman (termasuk lanskap). Halaman hasil scan dimasukkan sebagai gambar (belum ada OCR). Mesin konversi ada di `js/tools/pdf-to-word-core.js` dan tidak bergantung pada DOM.
 
 ---
 
@@ -121,7 +122,7 @@ Jika proyek Anda terhubung ke repository Git (GitHub/GitLab):
 
 ```
 Tools PDF/
-├── index.html              # Halaman utama (Tools Grid 12-in-1 dengan Live Search)
+├── index.html              # Halaman utama (daftar 13 alat dengan pencarian dan filter kategori)
 ├── README.md               # Dokumentasi proyek
 ├── netlify.toml            # Konfigurasi deployment & redirects Netlify
 ├── manifest.json           # PWA Web App Manifest

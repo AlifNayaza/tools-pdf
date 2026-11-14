@@ -9,6 +9,29 @@
     X-XSS-Protection = "1; mode=block"
     Referrer-Policy = "no-referrer-when-downgrade"
 
+# Cache: berkas statis boleh disimpan di browser/CDN, tetapi selalu divalidasi ulang agar
+# pembaruan langsung terlihat. Service worker mengurus cache cepat untuk kunjungan berikutnya.
+[[headers]]
+  for = "/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/sw.js"
+  [headers.values]
+    Cache-Control = "no-cache"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/icon.svg"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
 [[redirects]]
   from = "/pdf-compressor"
   to = "/pdf-compressor/index.html"
@@ -67,4 +90,9 @@
 [[redirects]]
   from = "/html-to-pdf"
   to = "/html-to-pdf/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/pdf-to-word"
+  to = "/pdf-to-word/index.html"
   status = 200

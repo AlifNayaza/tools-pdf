@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://unpkg.com;
+        worker-src 'self' blob: https://cdnjs.cloudflare.com;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+        img-src 'self' data: blob:;
+        connect-src 'self' data: blob: https://cdnjs.cloudflare.com https://unpkg.com;
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <meta name="description" content="Ubah PDF menjadi dokumen Word (.docx) yang rapi: judul, paragraf, daftar, tabel, dan gambar. Diproses di browser, file tidak diunggah.">
+    <title>PDF ke Word 📝</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#00f0ff">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;700&display=swap"></noscript>
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/webfonts/fa-solid-900.woff2">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+</head>
+<body class="tool-page">
+    <canvas id="backgroundCanvas"></canvas>
+
+    <div class="card">
+        <header class="card-header">
+            <a href="/" class="back-button"><i class="fas fa-arrow-left" aria-hidden="true"></i> Kembali</a>
+            <h1>PDF ke Word 📝</h1>
+            <p>Ubah PDF menjadi dokumen Word (.docx) yang rapi dan bisa diedit: judul, paragraf, daftar, tabel, dan gambar tetap tertata.</p>
+        </header>
+        <main class="card-body">
+            <!-- Langkah 1: Pilih file -->
+            <div class="step" id="step1">
+                <label for="pdfFile"><span class="step-no">1</span> Pilih file PDF</label>
+                <label for="pdfFile" class="file-label" id="dropArea">
+                    <div class="file-label-icon"><i class="fas fa-file-pdf" aria-hidden="true"></i></div>
+                    <span>Pilih File PDF</span>
+                    <small>Atau drag &amp; drop di sini &bull; Maks. 100MB</small>
+                </label>
+                <input type="file" id="pdfFile" accept=".pdf,application/pdf" hidden>
+            </div>
+
+            <!-- Info file -->
+            <div class="file-info" id="fileInfo" style="display:none;">
+                <p><strong>NAMA FILE:</strong> <span id="fileName"></span></p>
+                <p><strong>UKURAN:</strong> <span id="fileSize"></span></p>
+                <p><strong>HALAMAN:</strong> <span id="filePages">...</span></p>
+            </div>
+
+            <!-- Langkah 2: Pilihan -->
+            <div class="step" id="step2" style="display:none;">
+                <fieldset class="option-group">
+                    <legend><span class="step-no">2</span> Atur hasil Word</legend>
+                    <label class="option-row">
+                        <input type="checkbox" id="optPageBreaks" checked>
+                        <span><strong>Pertahankan pemisah halaman</strong><small>Tiap halaman PDF dimulai di halaman baru di Word.</small></span>
+                    </label>
+                    <label class="option-row">
+                        <input type="checkbox" id="optHeaderFooter" checked>
+                        <span><strong>Buang header, footer &amp; nomor halaman</strong><small>Teks yang berulang di tiap halaman tidak ikut masuk ke isi dokumen.</small></span>
+                    </label>
+                    <label class="option-row">
+                        <input type="checkbox" id="optImages" checked>
+                        <span><strong>Sertakan gambar</strong><small>Halaman hasil scan dimasukkan sebagai gambar (tanpa pengenalan teks).</small></span>
+                    </label>
+                </fieldset>
+            </div>
+
+            <button id="convertBtn" class="action-btn" style="display:none;">
+                <i class="fas fa-file-word" aria-hidden="true"></i> Konversi ke Word
+            </button>
+
+            <!-- Progress -->
+            <div class="progress-container" id="progressContainer" style="display:none;">
+                <p id="status" class="status-text" role="status" aria-live="polite">Mengonversi...</p>
+                <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBar">
+                    <div class="progress-bar-fill" id="progressBarFill"></div>
+                </div>
+            </div>
+
+            <!-- Hasil -->
+            <div class="result-info" id="resultInfo" style="display:none;">
+                <h2>Konversi Selesai</h2>
+                <div class="stats">
+                    <p>Halaman <strong id="resPages">—</strong></p>
+                    <p>Isi dokumen <strong id="resContent">—</strong></p>
+                    <p>Ukuran file <strong id="resSize">—</strong></p>
+                </div>
+                <p id="resNote" class="result-note"></p>
+                <a id="downloadLink" class="download-link">
+                    <i class="fas fa-download" aria-hidden="true"></i> Unduh file Word
+                </a>
+                <button type="button" id="retryBtn" class="reset-btn"><i class="fas fa-sliders-h" aria-hidden="true"></i> Ubah pengaturan</button>
+                <button type="button" id="resetBtn" class="reset-btn"><i class="fas fa-redo" aria-hidden="true"></i> Konversi file lain</button>
+            </div>
+        </main>
+    </div>
+
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script defer src="../js/shared/security.js"></script>
+    <script defer src="../js/shared/toast.js"></script>
+    <script defer src="../js/shared/pwa.js"></script>
+    <script defer src="../js/shared/file-validator.js"></script>
+    <script defer src="../js/shared/canvas-animation.js"></script>
+    <script defer src="../js/shared/navbar.js"></script>
+    <script defer src="../js/shared/tool-ui.js"></script>
+    <script defer src="../js/tools/pdf-to-word-core.js"></script>
+    <script defer src="../js/tools/pdf-to-word.js"></script>
+</body>
+</html>

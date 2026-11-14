@@ -14,7 +14,6 @@ class SecurityManager {
         this.ratelimitRequests();
         this.secureFileUpload();
         this.preventClickjacking();
-        this.sanitizeDOM();
     }
 
     // 1. CSRF Protection

@@ -34,6 +34,9 @@
             }
 
             if (this.container) {
+                this.container.setAttribute('role', 'status');
+                this.container.setAttribute('aria-live', 'polite');
+                this.container.setAttribute('aria-atomic', 'false');
                 this.container.style.cssText = `
                     position: fixed !important;
                     top: 84px !important;
@@ -99,12 +102,18 @@
             toast.innerHTML = `
                 <div class="toast-icon" style="font-size: 1.4rem; color: ${iconColor}; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;"><i class="fas ${iconClass}"></i></div>
                 <div class="toast-message" style="flex: 1 1 auto; min-width: 0; width: auto; max-width: 100%; line-height: 1.4; word-wrap: break-word; overflow-wrap: anywhere; white-space: normal; color: ${isDark ? '#f8fafc' : '#000000'}; font-family: sans-serif;">${this.escapeHTML(message)}</div>
-                <span class="toast-close" role="button" aria-label="Close" style="background: transparent !important; border: none !important; box-shadow: none !important; width: auto !important; height: auto !important; font-size: 1.4rem !important; font-weight: bold !important; cursor: pointer !important; color: ${isDark ? '#f8fafc' : '#000000'} !important; padding: 0 4px !important; margin: 0 !important; flex-shrink: 0 !important; line-height: 1 !important; display: inline-block !important;">&times;</span>
+                <span class="toast-close" role="button" tabindex="0" aria-label="Tutup notifikasi" style="background: transparent !important; border: none !important; box-shadow: none !important; width: auto !important; height: auto !important; font-size: 1.4rem !important; font-weight: bold !important; cursor: pointer !important; color: ${isDark ? '#f8fafc' : '#000000'} !important; padding: 0 4px !important; margin: 0 !important; flex-shrink: 0 !important; line-height: 1 !important; display: inline-block !important;">&times;</span>
             `;
 
             const closeBtn = toast.querySelector('.toast-close');
             if (closeBtn) {
                 closeBtn.addEventListener('click', () => this.dismiss(toast));
+                closeBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.dismiss(toast);
+                    }
+                });
             }
 
             this.container.appendChild(toast);
